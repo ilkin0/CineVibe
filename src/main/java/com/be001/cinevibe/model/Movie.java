@@ -2,7 +2,6 @@ package com.be001.cinevibe.model;
 
 import com.be001.cinevibe.model.enums.MovieGenres;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +34,7 @@ public class Movie {
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "movie")
     private List<Review> reviews;
+
     public Movie(String title, Integer releaseYear, String synopsis, Set<MovieGenres> genres, String director,  String posterImage, Double averageRating, Integer reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
         this.releaseYear = releaseYear;

@@ -1,12 +1,9 @@
 package com.be001.cinevibe.model;
-
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
-
+@Table(name = "casts")
 public class Cast {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
