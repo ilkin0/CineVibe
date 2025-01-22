@@ -2,6 +2,8 @@ package com.be001.cinevibe.model;
 
 import com.be001.cinevibe.model.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
