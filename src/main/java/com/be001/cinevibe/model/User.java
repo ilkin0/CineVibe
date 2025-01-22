@@ -2,6 +2,7 @@ package com.be001.cinevibe.model;
 
 import com.be001.cinevibe.model.enums.UserRole;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,13 +15,11 @@ public class User {
     @Column(nullable = false)
     private String email;
     @Column(nullable = false)
-
     private String password;
     @Column(nullable = false)
-
     private String username;
     private UserRole userRole;
-    private LocalDateTime createdAt ;
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean enabled;
     @OneToMany(mappedBy = "user")
