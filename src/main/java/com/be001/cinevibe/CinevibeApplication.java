@@ -2,7 +2,6 @@ package com.be001.cinevibe;
 
 import com.be001.cinevibe.model.Movie;
 import com.be001.cinevibe.model.User;
-import com.be001.cinevibe.model.enums.MovieGenres;
 import com.be001.cinevibe.model.enums.UserRole;
 import com.be001.cinevibe.repository.MovieRepository;
 import com.be001.cinevibe.repository.UserRepository;
