@@ -1,6 +1,5 @@
 package com.be001.cinevibe.model;
 
-import com.be001.cinevibe.model.enums.MovieGenres;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -15,11 +14,17 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-
     private String title;
     private Integer releaseYear;
     private String synopsis;
-    private Set<MovieGenres> genres;
+    @ManyToMany
+    @JoinTable(
+            name = "movie_genre_mapping",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private Set<MovieGenre> genres = new HashSet<>();
+
     private String director;
     @ManyToMany
     @JoinTable(
@@ -36,11 +41,10 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     private List<Review> reviews;
 
-    public Movie(String title, Integer releaseYear, String synopsis, Set<MovieGenres> genres, String director, String posterImage, Double averageRating, Integer reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Movie(String title, Integer releaseYear, String synopsis, String director, String posterImage, Double averageRating, Integer reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
         this.releaseYear = releaseYear;
         this.synopsis = synopsis;
-        this.genres = genres;
         this.director = director;
         this.posterImage = posterImage;
         this.averageRating = averageRating;
@@ -82,14 +86,6 @@ public class Movie {
 
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
-    }
-
-    public Set<MovieGenres> getGenres() {
-        return genres;
-    }
-
-    public void setGenres(Set<MovieGenres> genres) {
-        this.genres = genres;
     }
 
     public String getDirector() {
@@ -163,7 +159,6 @@ public class Movie {
                 ", title='" + title + '\'' +
                 ", releaseYear=" + releaseYear +
                 ", synopsis='" + synopsis + '\'' +
-                ", genres=" + genres +
                 ", director='" + director + '\'' +
                 ", cast=" + cast +
                 ", posterImage='" + posterImage + '\'' +
