@@ -23,7 +23,6 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
-
     @OneToMany(mappedBy = "review")
     private List<Comment> comment;
 

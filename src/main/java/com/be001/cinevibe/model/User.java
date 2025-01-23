@@ -15,17 +15,13 @@ public class User {
 
     @Column(nullable = false)
     private String email;
-
     @Column(nullable = false)
     private String password;
-
     @Column(nullable = false)
     private String username;
 
     private UserRole userRole;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     private Boolean enabled;
