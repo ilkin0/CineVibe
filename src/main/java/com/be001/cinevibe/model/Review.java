@@ -1,4 +1,5 @@
 package com.be001.cinevibe.model;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,20 +9,19 @@ import java.util.List;
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
-   private Integer rating;
-   private String content;
-   private boolean containsSpoilers;
-   private Integer helpfulCount;
-   private LocalDateTime createdAt;
-   private LocalDateTime updatedAt;
-   @ManyToOne
-   @JoinColumn(name = "user_id")
-   private User user;
+    private Long id;
+    private Integer rating;
+    private String content;
+    private boolean containsSpoilers;
+    private Integer helpfulCount;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
-
     @OneToMany(mappedBy = "review")
     private List<Comment> comment;
 
@@ -51,7 +51,7 @@ public class Review {
     }
 
     public void setRating(Integer rating) {
-        if (rating<1 || rating>5) {
+        if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("The rating must be in 1 and 5");
         }
         this.rating = rating;

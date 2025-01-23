@@ -1,4 +1,5 @@
 package com.be001.cinevibe.model;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

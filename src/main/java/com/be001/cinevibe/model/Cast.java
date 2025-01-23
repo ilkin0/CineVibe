@@ -1,18 +1,21 @@
 package com.be001.cinevibe.model;
+
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
+
 @Entity
 @Table(name = "casts")
 public class Cast {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
-    String imageUrl;
-    String biography;
+    private Long id;
+    private String name;
+    private String imageUrl;
+    private String biography;
     @ManyToMany(mappedBy = "cast")
-   Set<Movie> movies= new HashSet<>();
+    Set<Movie> movies = new HashSet<>();
 
     public Cast(Long id, String name, String imageUrl, String biography, Set<Movie> movies) {
         this.id = id;

@@ -1,13 +1,11 @@
 package com.be001.cinevibe.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Converter
 @Entity
 @Table(name = "movies")
 public class Movie {
