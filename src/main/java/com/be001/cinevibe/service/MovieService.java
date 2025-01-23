@@ -14,7 +14,7 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public List<Movie> findAll(){
+    public List<Movie> findAll() {
         return movieRepository.findAll();
     }
 }

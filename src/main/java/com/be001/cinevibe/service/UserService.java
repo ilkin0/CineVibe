@@ -20,9 +20,9 @@ public class UserService {
     public User findByUsername(String username) {
         return userRepository
                 .findByUsername(username).orElseThrow(() -> {
-                    logger.severe("User with username " + username + " not found");
-                    return new UsernameNotFoundException("User not found");
-                }
+                            logger.severe("User with username " + username + " not found");
+                            return new UsernameNotFoundException("User not found");
+                        }
                 );
     }
 }
