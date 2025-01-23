@@ -2,7 +2,6 @@ package com.be001.cinevibe.repository;
 
 
 import com.be001.cinevibe.model.WatchList;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
