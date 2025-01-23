@@ -44,10 +44,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+        httpSecurity
+                .csrf(csrf->csrf
+                        .ignoringRequestMatchers("api/public/**"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/movies")
+                        auth -> auth.requestMatchers("")
                                 .permitAll()
                                 .anyRequest()
                                 .hasRole("ADMIN"));
