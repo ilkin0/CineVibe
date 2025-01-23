@@ -16,24 +16,23 @@ public class WatchList {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToMany
     @JoinTable(
             name = "movie_to_watchlist",
-            joinColumns = @JoinColumn(name = "watch_list_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id")
+            joinColumns = @JoinColumn(name = "watch_list_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "movie_id", nullable = false)
     )
     private Set<Movie> movies = new HashSet<>();
     private LocalDateTime addedAt;
 
 
-    public WatchList(Long id, User user, Set<Movie> movies, LocalDateTime addedAt) {
-        this.id = id;
+    public WatchList(User user, Set<Movie> movies) {
         this.user = user;
         this.movies = movies;
-        this.addedAt = addedAt;
+        this.addedAt = LocalDateTime.now();
     }
 
     public WatchList() {
