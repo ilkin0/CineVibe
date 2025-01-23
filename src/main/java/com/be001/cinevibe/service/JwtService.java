@@ -11,10 +11,10 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    public String generateToken(String email, String secret, long expirationMS) {
+    public String generateToken(String username, String secret, long expirationMS) {
         long currentTime = System.currentTimeMillis();
         return Jwts.builder()
-                .subject(email)
+                .subject(username)
                 .issuedAt(new Date(currentTime))
                 .expiration(new Date(currentTime + expirationMS))
                 .signWith(getSecretKey(secret))
