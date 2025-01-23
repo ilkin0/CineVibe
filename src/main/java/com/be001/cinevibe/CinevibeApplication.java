@@ -1,6 +1,5 @@
 package com.be001.cinevibe;
 
-import com.be001.cinevibe.model.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
