@@ -7,11 +7,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WatchListRepository extends JpaRepository<WatchList, Long> {
 
-    List<WatchList> findByUserId(Long userId);
+    Optional<WatchList> findWatchListById(Long id);
+
+    List<WatchList> findAllByUserId(Long userId);
 
     @Query(value = """
             DELETE mtw

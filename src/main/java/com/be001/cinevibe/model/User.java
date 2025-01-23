@@ -28,8 +28,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
-    @OneToOne(mappedBy = "user")
-    private WatchList watchList;
+    @OneToMany(mappedBy = "user")
+    private List<WatchList> watchList;
 
     public User(String email, String password, String username, UserRole userRole, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean enabled) {
         this.email = email;

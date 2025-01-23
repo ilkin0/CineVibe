@@ -2,6 +2,7 @@ package com.be001.cinevibe.model;
 
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -9,13 +10,16 @@ import java.util.Set;
 
 @Entity
 @Table(name = "watch_lists")
+@Builder
 public class WatchList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    private String title;
+
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -38,6 +42,13 @@ public class WatchList {
     public WatchList() {
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public Long getId() {
         return id;
