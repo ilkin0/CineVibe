@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Converter
+//@Converter
 @Entity
 @Table(name = "movies")
 public class Movie {
@@ -41,6 +41,10 @@ public class Movie {
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "movie")
     private List<Review> reviews;
+
+    @ManyToMany(mappedBy = "movies")
+    private Set<WatchList> watchLists = new HashSet<>();
+
 
     public Movie(String title, Integer releaseYear, String synopsis, String director, String posterImage, Double averageRating, Integer reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
