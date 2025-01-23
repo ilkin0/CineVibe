@@ -10,10 +10,10 @@ import java.util.Set;
 public class Cast {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
-    String imageUrl;
-    String biography;
+    private Long id;
+    private String name;
+    private String imageUrl;
+    private String biography;
     @ManyToMany(mappedBy = "cast")
     Set<Movie> movies = new HashSet<>();
 

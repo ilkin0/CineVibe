@@ -1,7 +1,6 @@
 package com.be001.cinevibe.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
-
     @OneToMany(mappedBy = "review")
     private List<Comment> comment;
 
