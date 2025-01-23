@@ -14,6 +14,6 @@ public class MovieController {
 
     @GetMapping("/movies")
     public String getAll() {
-        return movieService.findAll().toString();
+        return "movies: " + movieService.findAll().toString();
     }
 }
