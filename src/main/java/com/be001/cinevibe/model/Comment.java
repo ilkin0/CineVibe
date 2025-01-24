@@ -3,6 +3,7 @@ package com.be001.cinevibe.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity

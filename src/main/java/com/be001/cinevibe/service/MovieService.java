@@ -55,5 +55,7 @@ public class MovieService {
         movie.setUpdatedAt(updatedMovie.getUpdatedAt());
         movieRepository.save(movie);
     }
-
+    public List<Movie> findAll() {
+        return movieRepository.findAll();
+    }
 }
