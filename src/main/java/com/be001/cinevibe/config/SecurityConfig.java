@@ -3,6 +3,7 @@ package com.be001.cinevibe.config;
 import com.be001.cinevibe.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -45,14 +46,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("api/public/**"))
+                        .ignoringRequestMatchers("/api/public/**", "/movies/**", "/users/**", "/comments/**", "/casts/**", "/reviews/**", "/genres/**"))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/movies")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated());
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/movies", "/users", "/comments", "/casts", "/reviews", "/genres").permitAll()
+                .anyRequest().authenticated());
 
         return httpSecurity.build();
     }
