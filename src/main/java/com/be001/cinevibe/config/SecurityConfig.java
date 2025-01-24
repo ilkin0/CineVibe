@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/movies")
+                        auth -> auth.requestMatchers("/movies", "/api/v1/profile")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated());
