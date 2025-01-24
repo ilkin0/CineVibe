@@ -17,8 +17,10 @@ public class User {
 
     @Column(nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     private String username;
 
@@ -31,6 +33,7 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
 
     private Boolean enabled;
 
@@ -179,7 +182,6 @@ public class User {
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         isCredentialsNonExpired = credentialsNonExpired;
     }
-
 
 
     public boolean isEnabled() {

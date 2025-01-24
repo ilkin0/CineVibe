@@ -66,11 +66,13 @@ public class UserService {
         if (file.isEmpty()) {
             throw new NoDataFound("No file chosen!");
         }
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof User user) {
-            String uploadDir = "src/main/resources/static/profile-pictures";
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+            String uploadDir = System.getProperty("user.dir") + "/profile-pictures";
+            String fileName = user.getEmail() + "_" + file.getOriginalFilename();
             File targetFile = new File(uploadDir, fileName);
 
             if (!targetFile.getParentFile().exists()) {
