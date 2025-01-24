@@ -2,6 +2,8 @@ package com.be001.cinevibe.model;
 
 import com.be001.cinevibe.model.enums.UserRole;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,8 +22,14 @@ public class User {
     @Column(nullable = false)
     private String username;
 
+    private String urlProfile;
+
     private UserRole userRole;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     private Boolean enabled;
@@ -40,7 +48,7 @@ public class User {
 
     private boolean isEnabled;
 
-    public User(String email, String password, String username, UserRole userRole, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean enabled) {
+    public User(String email, String password, String username, UserRole userRole, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean enabled, String urlProfile) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -48,6 +56,7 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.enabled = enabled;
+        this.urlProfile = urlProfile;
     }
 
     public User(String email, String password, String username) {
@@ -139,6 +148,14 @@ public class User {
         this.comments = comments;
     }
 
+    public String getUrlProfile() {
+        return urlProfile;
+    }
+
+    public void setUrlProfile(String urlProfile) {
+        this.urlProfile = urlProfile;
+    }
+
     public boolean isAccountNonExpired() {
         return isAccountNonExpired;
     }
@@ -162,6 +179,8 @@ public class User {
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         isCredentialsNonExpired = credentialsNonExpired;
     }
+
+
 
     public boolean isEnabled() {
         return isEnabled;

@@ -8,7 +8,10 @@ import com.be001.cinevibe.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 @Service
@@ -58,4 +61,35 @@ public class UserService {
         }
         throw new NoDataFound("No Principal Found");
     }
+
+    public UserProfile updateProfilePicture(MultipartFile file) throws NoDataFound, IOException, IOException {
+        if (file.isEmpty()) {
+            throw new NoDataFound("No file chosen!");
+        }
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof User user) {
+            String uploadDir = "src/main/resources/static/profile-pictures";
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            File targetFile = new File(uploadDir, fileName);
+
+            if (!targetFile.getParentFile().exists()) {
+                targetFile.getParentFile().mkdirs();
+            }
+
+            file.transferTo(targetFile);
+
+            String fileUrl = "/profile-pictures/" + fileName;
+
+            UserProfile userProfile = getProfile();
+            userProfile.setUrlProfile(fileUrl);
+
+            repository.save(mapper.toEntity(user, userProfile));
+
+            return userProfile;
+        }
+        throw new NoDataFound("No principal found!");
+
+    }
+
 }

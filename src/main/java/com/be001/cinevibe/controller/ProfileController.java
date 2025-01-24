@@ -8,6 +8,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("api/v1/profile")
@@ -23,6 +26,15 @@ public class ProfileController {
     @ResponseStatus(HttpStatus.OK)
     public UserProfile viewProfile() throws NoDataFound {
         return service.getProfile();
+    }
+
+    /**
+     * Add the current user's profile's picture or change existing one.
+     */
+    @PostMapping("/picture")
+    @ResponseStatus(HttpStatus.OK)
+    public UserProfile updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
+        return service.updateProfilePicture(file);
     }
 
     /**
@@ -42,5 +54,7 @@ public class ProfileController {
     public UserProfile updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
         return service.updateEmail(email);
     }
+
+
 }
 

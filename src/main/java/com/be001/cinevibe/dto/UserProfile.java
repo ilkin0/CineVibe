@@ -6,6 +6,8 @@ public class UserProfile {
 
     private String username;
 
+    private String urlProfile;
+
     public UserProfile(String email, String username) {
         this.email = email;
         this.username = username;
@@ -25,5 +27,13 @@ public class UserProfile {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUrlProfile() {
+        return urlProfile;
+    }
+
+    public void setUrlProfile(String urlProfile) {
+        this.urlProfile = urlProfile;
     }
 }
