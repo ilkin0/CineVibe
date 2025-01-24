@@ -1,5 +1,7 @@
 package com.be001.cinevibe.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -35,7 +37,9 @@ public class Movie {
     private String posterImage;
     private Double averageRating;
     private Integer reviewCount;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "movie")
     private List<Review> reviews;
@@ -85,6 +89,14 @@ public class Movie {
 
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
+    }
+
+    public Set<MovieGenre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<MovieGenre> genres) {
+        this.genres = genres;
     }
 
     public String getDirector() {
