@@ -1,11 +1,14 @@
-package com.be001.cinevibe.repository;
+package com.be001.cinevibe.service;
 
 import com.be001.cinevibe.model.WatchList;
-import com.be001.cinevibe.repository.dto.MovieDTOMock;
-import com.be001.cinevibe.repository.dto.WatchListDTO;
-import com.be001.cinevibe.repository.exception.InvalidIdException;
-import com.be001.cinevibe.repository.exception.UserNotFoundException;
-import com.be001.cinevibe.repository.exception.WatchListNotFoundException;
+import com.be001.cinevibe.repository.MovieRepository;
+import com.be001.cinevibe.repository.UserRepository;
+import com.be001.cinevibe.repository.WatchListRepository;
+import com.be001.cinevibe.dto.MovieDTOMock;
+import com.be001.cinevibe.dto.WatchListDTO;
+import com.be001.cinevibe.exception.InvalidIdException;
+import com.be001.cinevibe.exception.UserNotFoundException;
+import com.be001.cinevibe.exception.WatchListNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;

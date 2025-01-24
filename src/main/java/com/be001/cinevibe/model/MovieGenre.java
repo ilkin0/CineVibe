@@ -1,7 +1,6 @@
 package com.be001.cinevibe.model;
 
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,13 +10,10 @@ public class MovieGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, unique = true)
     private String name;
-
     @Column(length = 500)
     private String description;
-
     @ManyToMany(mappedBy = "genres")
     private Set<Movie> movies = new HashSet<>();
 

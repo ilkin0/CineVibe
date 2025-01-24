@@ -1,7 +1,8 @@
-package com.be001.cinevibe.repository;
+package com.be001.cinevibe.controller;
 
 
-import com.be001.cinevibe.repository.dto.WatchListDTO;
+import com.be001.cinevibe.service.WatchListService;
+import com.be001.cinevibe.dto.WatchListDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

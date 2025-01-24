@@ -1,4 +1,4 @@
-package com.be001.cinevibe.repository.exception;
+package com.be001.cinevibe.exception;
 
 public class UserNotFoundException extends RuntimeException {
 

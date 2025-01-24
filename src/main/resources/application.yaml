@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: cinevibe
+  datasource:
+    username: postgres
+    password: password
+    url: jdbc:postgresql://localhost:5432/cine_vibe
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        connection:
+          release_mode: on_close

@@ -1,4 +1,4 @@
-package com.be001.cinevibe.repository.dto;
+package com.be001.cinevibe.dto;
 
 import lombok.Builder;
 
