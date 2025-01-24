@@ -4,7 +4,9 @@ import com.be001.cinevibe.model.MovieGenre;
 import com.be001.cinevibe.service.MovieGenreService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 @RestController
 @RequestMapping("/genres")
 public class MovieGenreController {

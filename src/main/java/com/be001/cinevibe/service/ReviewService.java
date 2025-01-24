@@ -3,8 +3,8 @@ package com.be001.cinevibe.service;
 import com.be001.cinevibe.model.Review;
 import com.be001.cinevibe.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -14,9 +14,11 @@ public class ReviewService {
     public ReviewService(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
+
     public List<Review> getList() {
         return reviewRepository.findAll();
     }
+
     public Review findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Id can not be null");
@@ -24,31 +26,37 @@ public class ReviewService {
         Optional<Review> review = reviewRepository.findById(id);
         return review.orElse(null);
     }
+
     public void save(Review review) {
-        if (review!=null) {
+        if (review != null) {
             reviewRepository.save(review);
         }
     }
+
     public void deleteById(Long id) {
         if (id != null) {
             reviewRepository.deleteById(id);
         }
     }
-    public void update(Long id,Review updatedReview) {
-        if (id==null) {
+
+    public void update(Long id, Review updatedReview) {
+        if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        Optional<Review> reviewOptional = reviewRepository.findById(id);
-        if (reviewOptional.isEmpty()) {
-            throw new NoSuchElementException("Review is not found");
+        Review review = reviewRepository.findById(id).orElseThrow();
+        if (updatedReview.getRating() != null) {
+            review.setRating(updatedReview.getRating());
         }
-        Review review=reviewOptional.get();
-        review.setRating(updatedReview.getRating());
-        review.setContent(updatedReview.getContent());
+        if (updatedReview.getContent() != null) {
+            review.setContent(updatedReview.getContent());
+        }
         review.setContainsSpoilers(updatedReview.isContainsSpoilers());
-        review.setHelpfulCount(updatedReview.getHelpfulCount());
-        review.setCreatedAt(updatedReview.getCreatedAt());
-        review.setUpdatedAt(updatedReview.getUpdatedAt());
+        if (updatedReview.getHelpfulCount() != null) {
+            review.setHelpfulCount(updatedReview.getHelpfulCount());
+        }
+        if (updatedReview.getUpdatedAt() != null) {
+            review.setUpdatedAt(LocalDateTime.now());
+        }
         reviewRepository.save(review);
     }
 }

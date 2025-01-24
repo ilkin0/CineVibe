@@ -4,7 +4,9 @@ import com.be001.cinevibe.model.Cast;
 import com.be001.cinevibe.service.CastService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 @RestController
 @RequestMapping("/casts")
 public class CastController {

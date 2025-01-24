@@ -5,7 +5,6 @@ import com.be001.cinevibe.repository.MovieGenreRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -15,9 +14,11 @@ public class MovieGenreService {
     public MovieGenreService(MovieGenreRepository movieGenreRepository) {
         this.movieGenreRepository = movieGenreRepository;
     }
+
     public List<MovieGenre> getList() {
         return movieGenreRepository.findAll();
     }
+
     public MovieGenre findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Id can not be null");
@@ -25,27 +26,30 @@ public class MovieGenreService {
         Optional<MovieGenre> movieGenre = movieGenreRepository.findById(id);
         return movieGenre.orElse(null);
     }
+
     public void save(MovieGenre movieGenre) {
-        if (movieGenre!=null) {
+        if (movieGenre != null) {
             movieGenreRepository.save(movieGenre);
         }
     }
+
     public void deleteById(Long id) {
         if (id != null) {
             movieGenreRepository.deleteById(id);
         }
     }
+
     public void update(Long id, MovieGenre updatedMovieGenre) {
-        if (id==null) {
+        if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        Optional<MovieGenre> movieGenreOptional = movieGenreRepository.findById(id);
-        if (movieGenreOptional.isEmpty()) {
-            throw new NoSuchElementException("Movie Genre is not found");
+        MovieGenre movieGenre = movieGenreRepository.findById(id).orElseThrow();
+        if (updatedMovieGenre.getName() != null) {
+            movieGenre.setName(updatedMovieGenre.getName());
         }
-        MovieGenre movieGenre=movieGenreOptional.get();
-        movieGenre.setName(updatedMovieGenre.getName());
-        movieGenre.setDescription(updatedMovieGenre.getDescription());
+        if (updatedMovieGenre.getDescription() != null) {
+            movieGenre.setDescription(updatedMovieGenre.getDescription());
+        }
         movieGenreRepository.save(movieGenre);
     }
 }

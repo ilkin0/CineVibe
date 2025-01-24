@@ -4,7 +4,9 @@ import com.be001.cinevibe.model.Review;
 import com.be001.cinevibe.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {

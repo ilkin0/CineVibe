@@ -3,8 +3,9 @@ package com.be001.cinevibe.service;
 import com.be001.cinevibe.model.Comment;
 import com.be001.cinevibe.repository.CommentRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -40,19 +41,22 @@ public class CommentService {
     }
 
     public void update(Long id, Comment updatedComment) {
-        if (id==null) {
+        if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        Optional<Comment> commentOptional = commentRepository.findById(id);
-        if (commentOptional.isEmpty()) {
-            throw new NoSuchElementException("Comment is not found");
+        Comment comment = commentRepository.findById(id).orElseThrow();
+        if (updatedComment.getContent() != null) {
+            comment.setContent(updatedComment.getContent());
         }
-        Comment comment=commentOptional.get();
-        comment.setContent(updatedComment.getContent());
-        comment.setCreatedAt(updatedComment.getCreatedAt());
-        comment.setUpdatedAt(updatedComment.getUpdatedAt());
-        comment.setUser(updatedComment.getUser());
-        comment.setReview(updatedComment.getReview());
+        if (updatedComment.getUpdatedAt() != null) {
+            comment.setUpdatedAt(LocalDateTime.now());
+        }
+        if (updatedComment.getUser() != null) {
+            comment.setUser(updatedComment.getUser());
+        }
+        if (updatedComment.getReview() != null) {
+            comment.setReview(updatedComment.getReview());
+        }
         commentRepository.save(comment);
     }
 }
