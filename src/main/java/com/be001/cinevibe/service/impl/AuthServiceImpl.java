@@ -5,7 +5,7 @@ import com.be001.cinevibe.dto.UserResponseDTO;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.model.enums.UserRole;
 import com.be001.cinevibe.repository.UserRepository;
-import com.be001.cinevibe.service.interfaces.IAuthService;
+import com.be001.cinevibe.service.interfaces.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements IAuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

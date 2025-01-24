@@ -2,7 +2,7 @@ package com.be001.cinevibe.controller;
 
 import com.be001.cinevibe.dto.RegisterRequestDTO;
 import com.be001.cinevibe.dto.UserResponseDTO;
-import com.be001.cinevibe.service.interfaces.IAuthService;
+import com.be001.cinevibe.service.interfaces.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final IAuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {

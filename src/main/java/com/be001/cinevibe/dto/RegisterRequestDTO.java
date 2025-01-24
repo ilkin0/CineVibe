@@ -9,10 +9,6 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @Getter
 public class RegisterRequestDTO {
-    //email
-    //password
-    //username
-
     @NotBlank
     @Email
     private String email;
