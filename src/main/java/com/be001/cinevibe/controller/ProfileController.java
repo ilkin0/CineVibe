@@ -34,6 +34,17 @@ public class ProfileController {
     }
 
     /**
+     * View all profiles by user
+     */
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserProfile> viewAllProfiles(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return service.findAllProfiles(pageable);
+    }
+
+    /**
      * Add the current user's profile's picture or change existing one.
      */
     @PostMapping("/picture")
@@ -58,17 +69,6 @@ public class ProfileController {
     @ResponseStatus(HttpStatus.OK)
     public UserProfile updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
         return service.updateEmail(email);
-    }
-
-    /**
-     * View all profiles by admin
-     */
-    @GetMapping("/all")
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserProfile> viewAllProfiles(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return service.findAllProfiles(pageable);
     }
 
     /**
