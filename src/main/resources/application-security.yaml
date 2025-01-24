@@ -1,0 +1,8 @@
+security:
+  jwt:
+    accessToken:
+        secret: ${ACCESS_TOKEN}
+        expiration: 1800000
+    refreshToken:
+        secret: ${REFRESH_TOKEN}
+        expiration: 1800000
