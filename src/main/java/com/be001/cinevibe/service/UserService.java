@@ -112,11 +112,7 @@ public class UserService {
     }
 
     public List<UserProfile> findAllProfiles(Pageable pageable) {
-        return repository
-                .findAll(pageable)
-                .stream()
-                .map(mapper::toProfile)
-                .toList();
+        return repository.findAll(pageable).stream().map(mapper::toProfile).toList();
     }
 
     public void deleteById(Long id) {
@@ -124,25 +120,30 @@ public class UserService {
         log.warning("Account is deleted by id" + id);
     }
 
-    public User addFollowers(Long followerId, Long followingId) {
-        User follower = repository.findById(followerId)
-                .orElseThrow(() -> new RuntimeException("Follower not found"));
+    public User addFollowers(Long followingId) throws NoDataFound {
 
-        User following = repository.findById(followingId)
-                .orElseThrow(() -> new RuntimeException("Following not found"));
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User follower) {
 
-        follower.getFollows().add(following);
-        return repository.save(follower);
+            User following = repository.findById(followingId)
+                    .orElseThrow(() -> new RuntimeException("Following not found"));
+
+            follower.getFollows().add(following);
+            return repository.save(follower);
+        }
+        throw new NoDataFound("No principal found!");
     }
 
-    public User removeFollowers(Long followerId, Long followingId) {
-        User follower = repository.findById(followerId)
-                .orElseThrow(() -> new RuntimeException("Follower not found"));
+    public User removeFollowers(Long followingId) throws NoDataFound {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User follower) {
 
-        User following = repository.findById(followingId)
-                .orElseThrow(() -> new RuntimeException("Following not found"));
+            User following = repository.findById(followingId)
+                    .orElseThrow(() -> new RuntimeException("Following not found"));
 
-        follower.getFollows().remove(following);
-        return repository.save(follower);
+            follower.getFollows().remove(following);
+            return repository.save(follower);
+        }
+        throw new NoDataFound("No principal found!");
     }
 }

@@ -104,20 +104,20 @@ public class ProfileController {
     }
 
     /**
-     * Add user following.
+     * Add the current user following.
      */
-    @PostMapping("/{followerId}/follows/{followingId}")
-    public ResponseEntity<User> addColleague(@PathVariable Long followerId, @PathVariable Long followingId) {
-        User updatedUser = service.addFollowers(followerId, followingId);
+    @PostMapping("/follows/{followingId}")
+    public ResponseEntity<User> addColleague(@PathVariable Long followingId) throws NoDataFound {
+        User updatedUser = service.addFollowers( followingId);
         return ResponseEntity.ok(updatedUser);
     }
 
     /**
-     * Remove user following.
+     * Remove the current user following.
      */
-    @DeleteMapping("/{followerId}/follows/{followingId}")
-    public ResponseEntity<User> removeFriend(@PathVariable Long followerId, @PathVariable Long followingId) {
-        User updatedUser = service.removeFollowers(followerId, followingId);
+    @DeleteMapping("/follows/{followingId}")
+    public ResponseEntity<User> removeFriend(@PathVariable Long followingId) throws NoDataFound {
+        User updatedUser = service.removeFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }
 }

@@ -2,7 +2,7 @@ spring:
   application:
     name: cinevibe
   datasource:
-    username: postgress
+    username: postgres
     password: password
     url: jdbc:postgresql://localhost:5432/cine_vibe
   jpa:
