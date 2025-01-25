@@ -1,8 +1,8 @@
 security:
   jwt:
     accessToken:
-        secret: bda953e5-e44d-47bd-a466-33d07235337f6Oj6rXhHSa0g2daZz9Ad42/9yZ0ntK60DJQUs3+Ope4=           #${ACCESS_TOKEN}
-        expiration: 1800000
+      secret: bda953e5e44d47bda46633d07235337f6Oj6rXhHSa0g2daZz9Ad42/9yZ0ntK60DJQUs3+Ope4=           #${ACCESS_TOKEN}
+      expiration: 1800000
     refreshToken:
-        secret: bda953e5-e44d-47bd-a466-33d07235337f6Oj6rXhHSa0g2daZz9Ad42/9yZ0ntK60DJQUs3+Ope4=          #${REFRESH_TOKEN}
-        expiration: 1800000
+      secret: bda953e5e44d47bda46633d07235337f6Oj6rXhHSa0g2daZz9Ad42/9yZ0ntK60DJQUs3+Ope4=          #${REFRESH_TOKEN}
+      expiration: 1800000

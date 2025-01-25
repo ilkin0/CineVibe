@@ -9,6 +9,7 @@ import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.model.enums.UserRole;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,13 +27,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
     private final Logger log = Logger.getLogger(AuthService.class.getName());
 
-    public AuthService(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, TokenService tokenService) {
+    public AuthService(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, TokenService tokenService, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.tokenService = tokenService;
+        this.authenticationManager = authenticationManager;
     }
 
     public RegisterResponse registerUser(@Valid RegisterRequest request) {
@@ -57,42 +60,65 @@ public class AuthService {
         return new RegisterResponse(userService.save(user).getUsername());
     }
 
-    public SignInResponse signInUser(SignInRequest request){
-        log.log(Level.INFO ,"User try sing in.");
+    public SignInResponse signInUser(SignInRequest request) {
+        log.log(Level.INFO, "User try singing in.");
 
-        try{
-            var authenticationToken = new UsernamePasswordAuthenticationToken(request.username(),request.password());
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }catch (Exception e){
+        try {
+            var authenticationToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
+            var authenticate = authenticationManager.authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+        } catch (Exception e) {
             log.severe("Username or password incorrect.");
             throw new RuntimeException("Username or password incorrect.");
         }
         String accessToken = jwtService.generateAccessToken(request.username());
         String refreshToken = jwtService.generateRefreshToken(request.username());
 
-        Token token =new Token(accessToken,
+        Token token = new Token(accessToken,
                 Instant.now(),
                 Instant.now()
                         .plusSeconds(accessTokenExpiration),
                 false,
                 false,
                 userService.findByUsername(request.username())
-                );
+        );
 
         tokenService.save(token);
 
-        return new SignInResponse(accessToken,refreshToken);
+        return new SignInResponse(accessToken, refreshToken);
     }
 
-    private void checkUsername(String username){
-        if (userService.existsByUsername(username)){
+    public void signOutUser(String accessToken) {
+        log.log(Level.INFO, "User is signing out.");
+
+        if (!jwtService.isValidToken(accessToken, true)) {
+            log.severe("Invalid token provided for logout.");
+            throw new RuntimeException("Invalid token.");
+        }
+
+        Token token = tokenService.findByValue(accessToken);
+        if (token == null) {
+            log.severe("Token not found in the database.");
+            throw new RuntimeException("Token not found.");
+        }
+
+        token.setRevoked(true);
+        token.setExpired(true);
+        tokenService.save(token);
+
+        log.log(Level.INFO, "User successfully signed out.");
+    }
+
+
+    private void checkUsername(String username) {
+        if (userService.existsByUsername(username)) {
             log.severe("Username exist.");
             throw new RuntimeException("Invalid username. Username exist.");
         }
     }
 
-    private void checkEmail(String email){
-        if (userService.existsByEmail(email)){
+    private void checkEmail(String email) {
+        if (userService.existsByEmail(email)) {
             log.severe("Email exist.");
             throw new RuntimeException("Invalid email. Email exist.");
         }
