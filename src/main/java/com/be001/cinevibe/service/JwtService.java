@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.Objects;
 
 @Service
 public class JwtService {
@@ -73,7 +72,7 @@ public class JwtService {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Token is not valid or expired: " + e.getMessage());
         }
     }

@@ -7,24 +7,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String username;
 
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    private Boolean enabled;
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
@@ -40,14 +40,15 @@ public class User {
 
     private boolean isEnabled;
 
-    public User(String email, String password, String username, UserRole userRole, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean enabled) {
+    public User(String email, String password, String username, UserRole userRole, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.userRole = userRole;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.enabled = enabled;
+        this.isAccountNonExpired = isAccountNonExpired;
+        this.isAccountNonLocked = isAccountNonLocked;
+        this.isCredentialsNonExpired = isCredentialsNonExpired;
+        this.isEnabled = isEnabled;
     }
 
     public User() {
@@ -109,14 +110,6 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public List<Review> getReviews() {
         return reviews;
     }
@@ -169,6 +162,15 @@ public class User {
         return new CustomUserDetails(this);
     }
 
+    @PrePersist
+    private void onCreate() {
+        updatedAt = createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     @Override
     public String toString() {
@@ -180,7 +182,12 @@ public class User {
                 ", userRole=" + userRole +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", enabled=" + enabled +
+                ", reviews=" + reviews +
+                ", comments=" + comments +
+                ", isAccountNonExpired=" + isAccountNonExpired +
+                ", isAccountNonLocked=" + isAccountNonLocked +
+                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
+                ", isEnabled=" + isEnabled +
                 '}';
     }
 }
