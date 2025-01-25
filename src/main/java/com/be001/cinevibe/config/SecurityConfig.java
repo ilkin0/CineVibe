@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/movies", "/users", "/comments", "/casts", "/reviews", "/genres").permitAll()
+                .requestMatchers("/movies/**", "/users/**", "/comments/**", "/casts/**", "/reviews/**", "/genres/**").permitAll()
                 .anyRequest().authenticated());
 
         return httpSecurity.build();

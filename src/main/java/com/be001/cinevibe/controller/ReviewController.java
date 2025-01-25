@@ -1,6 +1,9 @@
 package com.be001.cinevibe.controller;
 
+import com.be001.cinevibe.model.Movie;
 import com.be001.cinevibe.model.Review;
+import com.be001.cinevibe.model.User;
+import com.be001.cinevibe.service.MovieService;
 import com.be001.cinevibe.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +29,10 @@ public class ReviewController {
         return reviewService.findById(id);
     }
 
-    @PostMapping
+    @PostMapping("/{movieId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestBody Review review) {
-        reviewService.save(review);
+    public void save(@RequestBody Review review, @PathVariable Long movieId) {
+        reviewService.save(review, movieId);
     }
 
     @DeleteMapping("/{id}")
@@ -42,5 +45,16 @@ public class ReviewController {
     public void update(@PathVariable Long id, @RequestBody Review review) {
         reviewService.update(id, review);
     }
+
+    @GetMapping("/movies/{id}")
+    public List<Review> getByMovieId(@PathVariable Long id) {
+        return reviewService.getReviewsByMovieId(id);
+    }
+
+    @GetMapping("/users/{id}")
+    public List<Review> getByUserId(@PathVariable Long id) {
+        return reviewService.getReviewsByUserId(id);
+    }
+
 
 }

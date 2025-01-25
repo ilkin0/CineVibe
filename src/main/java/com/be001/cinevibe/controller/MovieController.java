@@ -2,6 +2,7 @@ package com.be001.cinevibe.controller;
 
 import com.be001.cinevibe.model.Movie;
 import com.be001.cinevibe.service.MovieService;
+import com.be001.cinevibe.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +12,10 @@ import java.util.List;
 @RequestMapping("/movies")
 public class MovieController {
     private final MovieService movieService;
-
-    public MovieController(MovieService movieService) {
+    private final ReviewService reviewService;
+    public MovieController(MovieService movieService, ReviewService reviewService) {
         this.movieService = movieService;
+        this.reviewService = reviewService;
     }
 
     @GetMapping
@@ -41,5 +43,19 @@ public class MovieController {
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody Movie movie) {
         movieService.update(id, movie);
+    }
+    @GetMapping("/{id}/averageRating")
+    public double getAverageRating(@PathVariable Long id) {
+        Movie movie=movieService.findById(id);
+        reviewService.updateRating(movie);
+        return movie.getAverageRating();
+    }
+    @GetMapping("/{id}/maxRating")
+    public int getMaxRating(@PathVariable Long id) {
+        return reviewService.findMaxRating(id);
+    }
+    @GetMapping("/{id}/minRating")
+    public int getMinRating(@PathVariable Long id) {
+        return reviewService.findMinRating(id);
     }
 }
