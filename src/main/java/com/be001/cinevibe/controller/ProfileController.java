@@ -2,6 +2,7 @@ package com.be001.cinevibe.controller;
 
 import com.be001.cinevibe.dto.UserProfile;
 import com.be001.cinevibe.exceptions.NoDataFound;
+import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.service.UserService;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -99,6 +101,24 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('admin')")
     public void deleteProfileById(@PathVariable @Positive Long id) {
         service.deleteById(id);
+    }
+
+    /**
+     * Add user following.
+     */
+    @PostMapping("/{followerId}/follows/{followingId}")
+    public ResponseEntity<User> addColleague(@PathVariable Long followerId, @PathVariable Long followingId) {
+        User updatedUser = service.addFollowers(followerId, followingId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    /**
+     * Remove user following.
+     */
+    @DeleteMapping("/{followerId}/follows/{followingId}")
+    public ResponseEntity<User> removeFriend(@PathVariable Long followerId, @PathVariable Long followingId) {
+        User updatedUser = service.removeFollowers(followerId, followingId);
+        return ResponseEntity.ok(updatedUser);
     }
 }
 

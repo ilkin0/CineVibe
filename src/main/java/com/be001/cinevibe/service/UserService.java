@@ -118,4 +118,26 @@ public class UserService {
     public void deleteById(Long id) {
         repository.deleteById(id);
     }
+
+    public User addFollowers(Long followerId, Long followingId) {
+        User follower = repository.findById(followerId)
+                .orElseThrow(() -> new RuntimeException("Follower not found"));
+
+        User following = repository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following not found"));
+
+        follower.getFollows().add(following);
+        return repository.save(follower);
+    }
+
+    public User removeFollowers(Long followerId, Long followingId) {
+        User follower = repository.findById(followerId)
+                .orElseThrow(() -> new RuntimeException("Follower not found"));
+
+        User following = repository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following not found"));
+
+        follower.getFollows().remove(following);
+        return repository.save(follower);
+    }
 }

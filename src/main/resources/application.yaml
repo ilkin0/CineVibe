@@ -4,7 +4,7 @@ spring:
   datasource:
     username: postgress
     password: password
-    url: jdbc:postgresql://localhost:5435/cine_vibe
+    url: jdbc:postgresql://localhost:5432/cine_vibe
   jpa:
     hibernate:
       ddl-auto: create-drop
