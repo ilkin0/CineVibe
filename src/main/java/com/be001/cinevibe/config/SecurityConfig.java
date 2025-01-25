@@ -49,11 +49,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/auth/register","api/public/**"))
+                        .ignoringRequestMatchers("/auth/**","api/public/**"))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/movies","/auth/register")
+                        auth -> auth.requestMatchers("/movies","/auth/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

@@ -15,4 +15,8 @@ public class TokenService{
     public Token findByValue(String value){
         return tokenRepository.findByValue(value).orElseThrow();
     }
+
+    public Token save(Token token){
+        return tokenRepository.save(token);
+    }
 }

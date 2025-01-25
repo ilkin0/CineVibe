@@ -26,14 +26,12 @@ public class Token {
     public Token() {
     }
 
-    public Token(Long id,
-                 String value,
+    public Token(String value,
                  Instant issuedAt,
                  Instant expiredAt,
                  boolean isExpired,
                  boolean isRevoked,
                  User user) {
-        this.id = id;
         this.value = value;
         this.issuedAt = issuedAt;
         this.expiredAt = expiredAt;

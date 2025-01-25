@@ -2,6 +2,8 @@ package com.be001.cinevibe.controller;
 
 import com.be001.cinevibe.dto.RegisterRequest;
 import com.be001.cinevibe.dto.RegisterResponse;
+import com.be001.cinevibe.dto.SignInRequest;
+import com.be001.cinevibe.dto.SignInResponse;
 import com.be001.cinevibe.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,5 +32,13 @@ public class AuthController {
 
         var registerResponse = authService.registerUser(request);
         return new ResponseEntity<>(registerResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest request) {
+        logger.log(Level.INFO,"Some user try signIn.");
+
+        var signInResponse = authService.signInUser(request);
+        return new ResponseEntity<>(signInResponse, HttpStatus.OK);
     }
 }
