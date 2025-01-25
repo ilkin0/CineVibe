@@ -59,6 +59,7 @@ public class UserService {
 
         if (principal instanceof User user) {
             user.setEmail(email);
+            log.info("Email update request by " + email);
             return mapper.toProfile(repository.save(user));
         }
         throw new NoDataFound("No Principal Found");
@@ -68,6 +69,7 @@ public class UserService {
         if (file.isEmpty()) {
             throw new NoDataFound("No file chosen!");
         }
+
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User user) {
@@ -88,7 +90,7 @@ public class UserService {
             userProfile.setUrlProfile(fileUrl);
 
             repository.save(mapper.toEntity(user, userProfile));
-
+            log.info("Profile picture update request by " + user.getEmail());
             return userProfile;
         }
         throw new NoDataFound("No principal found!");
@@ -99,12 +101,14 @@ public class UserService {
         User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
         user.setEnabled(false);
         repository.save(user);
+        log.warning("Account is disabled: " + user.getEmail());
     }
 
     public void activateAccount(Long id) throws NoDataFound {
         User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
         user.setEnabled(true);
         repository.save(user);
+        log.warning("Account is enabled: " + user.getEmail());
     }
 
     public List<UserProfile> findAllProfiles(Pageable pageable) {
@@ -117,5 +121,6 @@ public class UserService {
 
     public void deleteById(Long id) {
         repository.deleteById(id);
+        log.warning("Account is deleted by id" + id);
     }
 }
