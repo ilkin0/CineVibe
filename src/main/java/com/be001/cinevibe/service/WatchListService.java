@@ -1,5 +1,7 @@
 package com.be001.cinevibe.service;
 
+import com.be001.cinevibe.model.Movie;
+import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.model.WatchList;
 import com.be001.cinevibe.repository.MovieRepository;
 import com.be001.cinevibe.repository.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class WatchListService {
@@ -60,10 +63,13 @@ public class WatchListService {
     }
 
     public WatchListDTO createWatchList(Long userId, String title, List<Long> movieIds) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("User not found"));
+        Set<Movie> movies = new HashSet<>(movieRepository.findAllById(movieIds));
+
         WatchList watchList = watchListRepository.save(WatchList.builder()
-                .user(userRepository.findById(userId).orElseThrow(
-                        () -> new UserNotFoundException("User not found")))
-                .movies(new HashSet<>(movieRepository.findAllById(movieIds)))
+                .user(user)
+                .movies(movies)
                 .build());
         return mapWatchListToDTO(watchList);
     }

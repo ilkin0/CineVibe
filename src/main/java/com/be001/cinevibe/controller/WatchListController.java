@@ -41,13 +41,13 @@ public class WatchListController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{userId}/movies/{movieId}")
+    @PostMapping("/{userId}/{movieId}")
     public ResponseEntity<String> addMovieToWatchList(@PathVariable("userId") Long userId, @PathVariable("movieId") Long movieId) throws RuntimeException{
         watchListService.addToWatchList(userId, movieId);
         return ResponseEntity.ok("Movie added successfully");
     }
 
-    @DeleteMapping("/{userId}/movies/{movieId}")
+    @DeleteMapping("/{userId}/{movieId}")
     public ResponseEntity<String> removeMovieFromWatchList(@PathVariable("userId") Long userId, @PathVariable("movieId") Long movieId) throws RuntimeException{
         watchListService.removeMovieFromUserWatchList(userId, movieId);
         return ResponseEntity.ok("Movie removed successfully");
