@@ -3,6 +3,7 @@ package com.be001.cinevibe.controller;
 import com.be001.cinevibe.model.Comment;
 import com.be001.cinevibe.service.CommentService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,30 +18,30 @@ public class CommentController {
     }
 
     @GetMapping
-    public List<Comment> list() {
-        return commentService.getList();
+    public ResponseEntity<List<Comment>> list() {
+        return ResponseEntity.ok(commentService.getList());
     }
 
     @GetMapping("/{id}")
-    public Comment getById(@PathVariable Long id) {
-        return commentService.findById(id);
+    public ResponseEntity<Comment> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.findById(id));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestBody Comment comment) {
+    public ResponseEntity<Void> save(@RequestBody Comment comment) {
         commentService.save(comment);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         commentService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody Comment comment) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Comment comment) {
         commentService.update(id, comment);
+        return ResponseEntity.ok().build();
     }
-
 }

@@ -46,14 +46,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/public/**", "/movies/**", "/users/**", "/comments/**", "/casts/**", "/reviews/**", "/genres/**"))
+                        .ignoringRequestMatchers("/api/public/**"))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/movies/**", "/users/**", "/comments/**", "/casts/**", "/reviews/**", "/genres/**").permitAll()
-                .anyRequest().authenticated());
-
+                        .requestMatchers("/app/v1/").authenticated()
+                        .anyRequest().authenticated());
         return httpSecurity.build();
     }
-
 }

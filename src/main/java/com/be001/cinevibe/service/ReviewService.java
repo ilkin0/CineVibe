@@ -42,7 +42,7 @@ public class ReviewService {
 
     public void updateRating(Movie movie) {
         List<Review> reviews = reviewRepository.findByMovieId(movie.getId());
-        double averageRating = reviews.stream().mapToInt(Review::getRating).average().orElseThrow();
+        double averageRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0);
         movie.setAverageRating(averageRating);
         movieRepository.save(movie);
     }
@@ -84,11 +84,11 @@ public class ReviewService {
     public Integer findMaxRating(Long movieId) {
         checkNull(movieId);
         List<Review> reviews = reviewRepository.findByMovieId(movieId);
-        return reviews.stream().mapToInt(Review::getRating).max().orElseThrow();
+        return reviews.stream().mapToInt(Review::getRating).max().orElse(0);
     }
     public Integer findMinRating(Long movieId) {
         List<Review> reviews = reviewRepository.findByMovieId(movieId);
-        return reviews.stream().mapToInt(Review::getRating).min().orElseThrow();
+        return reviews.stream().mapToInt(Review::getRating).min().orElse(0);
     }
     public void checkNull(Long id) {
         if (id == null) {

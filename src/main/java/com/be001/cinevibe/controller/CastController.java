@@ -3,6 +3,7 @@ package com.be001.cinevibe.controller;
 import com.be001.cinevibe.model.Cast;
 import com.be001.cinevibe.service.CastService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,30 +18,30 @@ public class CastController {
     }
 
     @GetMapping
-    public List<Cast> list() {
-        return castService.getList();
+    public ResponseEntity<List<Cast>> list() {
+        return ResponseEntity.ok(castService.getList());
     }
 
     @GetMapping("/{id}")
-    public Cast getById(@PathVariable Long id) {
-        return castService.findById(id);
+    public ResponseEntity<Cast> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(castService.findById(id));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestBody Cast cast) {
+    public ResponseEntity<Void> save(@RequestBody Cast cast) {
         castService.save(cast);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         castService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody Cast cast) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Cast cast) {
         castService.update(id, cast);
+        return ResponseEntity.ok().build();
     }
-
 }

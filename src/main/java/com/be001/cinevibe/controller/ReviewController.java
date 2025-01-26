@@ -1,11 +1,9 @@
 package com.be001.cinevibe.controller;
 
-import com.be001.cinevibe.model.Movie;
 import com.be001.cinevibe.model.Review;
-import com.be001.cinevibe.model.User;
-import com.be001.cinevibe.service.MovieService;
 import com.be001.cinevibe.service.ReviewService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,41 +18,40 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<Review> list() {
-        return reviewService.getList();
+    public ResponseEntity<List<Review>> list() {
+        return ResponseEntity.ok(reviewService.getList());
     }
 
     @GetMapping("/{id}")
-    public Review getById(@PathVariable Long id) {
-        return reviewService.findById(id);
+    public ResponseEntity<Review> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(reviewService.findById(id));
     }
 
     @PostMapping("/{movieId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestBody Review review, @PathVariable Long movieId) {
+    public ResponseEntity<Void> save(@RequestBody Review review, @PathVariable Long movieId) {
         reviewService.save(review, movieId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reviewService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody Review review) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Review review) {
         reviewService.update(id, review);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/movies/{id}")
-    public List<Review> getByMovieId(@PathVariable Long id) {
-        return reviewService.getReviewsByMovieId(id);
+    public ResponseEntity<List<Review>> getByMovieId(@PathVariable Long id) {
+        return ResponseEntity.ok(reviewService.getReviewsByMovieId(id));
     }
 
     @GetMapping("/users/{id}")
-    public List<Review> getByUserId(@PathVariable Long id) {
-        return reviewService.getReviewsByUserId(id);
+    public ResponseEntity<List<Review>> getByUserId(@PathVariable Long id) {
+        return ResponseEntity.ok(reviewService.getReviewsByUserId(id));
     }
-
-
 }
