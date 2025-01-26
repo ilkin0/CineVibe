@@ -1,6 +1,6 @@
 package com.be001.cinevibe.mapper;
 
-import com.be001.cinevibe.dto.UserProfile;
+import com.be001.cinevibe.dto.UserProfileDTO;
 import com.be001.cinevibe.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ProfileMapper {
 
-    UserProfile toProfile(User user);
+    UserProfileDTO toProfile(User user);
 
     @Mapping(target = "userRole", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -22,6 +22,6 @@ public interface ProfileMapper {
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "accountNonLocked", ignore = true)
     @Mapping(target = "accountNonExpired", ignore = true)
-    User toEntity(@MappingTarget User entity, UserProfile profile);
+    User toEntity(@MappingTarget User entity, UserProfileDTO profile);
 
 }

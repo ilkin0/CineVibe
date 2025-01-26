@@ -1,6 +1,6 @@
 package com.be001.cinevibe.service;
 
-import com.be001.cinevibe.dto.UserProfile;
+import com.be001.cinevibe.dto.UserProfileDTO;
 import com.be001.cinevibe.exceptions.NoDataFound;
 import com.be001.cinevibe.mapper.ProfileMapper;
 import com.be001.cinevibe.model.User;
@@ -33,7 +33,7 @@ public class UserService {
         return null;
     }
 
-    public UserProfile getProfile() throws NoDataFound {
+    public UserProfileDTO getProfile() throws NoDataFound {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof User user) {
@@ -43,7 +43,7 @@ public class UserService {
         throw new NoDataFound("No principal found!");
     }
 
-    public UserProfile updateUsername(String username) throws NoDataFound {
+    public UserProfileDTO updateUsername(String username) throws NoDataFound {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof User user) {
@@ -54,7 +54,7 @@ public class UserService {
         throw new NoDataFound("No principal found!");
     }
 
-    public UserProfile updateEmail(String email) throws NoDataFound {
+    public UserProfileDTO updateEmail(String email) throws NoDataFound {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof User user) {
@@ -65,7 +65,7 @@ public class UserService {
         throw new NoDataFound("No Principal Found");
     }
 
-    public UserProfile updateProfilePicture(MultipartFile file) throws NoDataFound, IOException, IOException {
+    public UserProfileDTO updateProfilePicture(MultipartFile file) throws NoDataFound, IOException, IOException {
         if (file.isEmpty()) {
             throw new NoDataFound("No file chosen!");
         }
@@ -86,7 +86,7 @@ public class UserService {
 
             String fileUrl = "/profile-pictures/" + fileName;
 
-            UserProfile userProfile = getProfile();
+            UserProfileDTO userProfile = getProfile();
             userProfile.setUrlProfile(fileUrl);
 
             repository.save(mapper.toEntity(user, userProfile));
@@ -111,7 +111,7 @@ public class UserService {
         log.warning("Account is enabled: " + user.getEmail());
     }
 
-    public List<UserProfile> findAllProfiles(Pageable pageable) {
+    public List<UserProfileDTO> findAllProfiles(Pageable pageable) {
         return repository.findAll(pageable).stream().map(mapper::toProfile).toList();
     }
 
