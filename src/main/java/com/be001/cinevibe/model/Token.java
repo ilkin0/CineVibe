@@ -9,16 +9,22 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, unique = true)
     private String value;
+
     @Column
     private Instant issuedAt;
+
     @Column
     private Instant expiredAt;
+
     @Column
     private boolean isExpired;
+
     @Column
     private boolean isRevoked;
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private User user;

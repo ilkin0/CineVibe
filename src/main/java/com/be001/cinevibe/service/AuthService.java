@@ -23,11 +23,17 @@ import java.util.logging.Logger;
 public class AuthService {
     @Value("${security.jwt.accessToken.expiration}")
     private long accessTokenExpiration;
+
     private final UserService userService;
+
     private final PasswordEncoder passwordEncoder;
+
     private final JwtService jwtService;
+
     private final TokenService tokenService;
+
     private final AuthenticationManager authenticationManager;
+
     private final Logger log = Logger.getLogger(AuthService.class.getName());
 
     public AuthService(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, TokenService tokenService, AuthenticationManager authenticationManager) {
@@ -88,8 +94,15 @@ public class AuthService {
         return new SignInResponse(accessToken, refreshToken);
     }
 
-    public void signOutUser(String accessToken) {
+    public void signOutUser(String authorizationHeader) throws Exception {
         log.log(Level.INFO, "User is signing out.");
+
+        if (!authorizationHeader.startsWith("Bearer ")) {
+            log.severe("Invalid Authorization header.");
+            throw new Exception();
+        }
+
+        String accessToken = authorizationHeader.substring(7);
 
         if (!jwtService.isValidToken(accessToken, true)) {
             log.severe("Invalid token provided for logout.");
@@ -130,10 +143,6 @@ public class AuthService {
     }
 
     private void checkPassword(String password) {
-        if (password.length() < 8) {
-            log.severe("Password length cannot be less than 8.");
-            throw new RuntimeException("Invalid password. Password length cannot be less than 8.");
-        }
 
         boolean isPasswordContainNumber = false,
                 isPasswordContainLowerCase = false,

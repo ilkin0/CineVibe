@@ -19,8 +19,11 @@ import java.util.logging.Logger;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+
     private final UserService userService;
+
     private final TokenService tokenService;
+
     private final Logger logger = Logger.getLogger(JwtAuthenticationFilter.class.getName());
 
     public JwtAuthenticationFilter(JwtService jwtService, UserService userService, TokenService tokenService) {

@@ -43,18 +43,14 @@ public class AuthController {
     public ResponseEntity<String> signOut(@RequestHeader("Authorization") String authorizationHeader) {
         logger.log(Level.INFO, "Some user is trying to sign out.");
 
-        if (!authorizationHeader.startsWith("Bearer ")) {
-            logger.severe("Invalid Authorization header.");
-            return new ResponseEntity<>("Invalid Authorization header.", HttpStatus.BAD_REQUEST);
-        }
-
-        String accessToken = authorizationHeader.substring(7);
         try {
-            authService.signOutUser(accessToken);
+            authService.signOutUser(authorizationHeader);
             return new ResponseEntity<>("Successfully signed out.", HttpStatus.OK);
         } catch (RuntimeException e) {
             logger.severe("Sign out failed: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }catch (Exception e){
+            return new ResponseEntity<>("Invalid Authorization header.", HttpStatus.BAD_REQUEST);
         }
     }
 }
