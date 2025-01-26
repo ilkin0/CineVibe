@@ -108,7 +108,7 @@ public class ProfileController {
      */
     @PostMapping("/follows/{followingId}")
     public ResponseEntity<User> addFollow(@PathVariable Long followingId) throws NoDataFound {
-        User updatedUser = service.addFollowers( followingId);
+        User updatedUser = service.addFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }
 

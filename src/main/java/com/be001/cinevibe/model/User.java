@@ -36,7 +36,6 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-
     private Boolean enabled;
 
     @OneToMany(mappedBy = "user")
@@ -51,7 +50,7 @@ public class User {
             joinColumns = @JoinColumn(name = "follow_by"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    private Set<User> follows=new HashSet<>();
+    private Set<User> follows  = new HashSet<>();
 
     private boolean isAccountNonExpired;
 
