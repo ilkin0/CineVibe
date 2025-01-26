@@ -51,15 +51,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("api/public/**")
+                        .ignoringRequestMatchers("api/public/**","/api/v1/profile/**")
                         .disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
-//                                auth.requestMatchers("/movies", "/api/v1/profile/picture")
-//                                        .permitAll()
-                                auth.anyRequest()
+                                auth.requestMatchers("/movies", "/api/v1/profile/**")
                                         .permitAll());
 
         return httpSecurity.build();

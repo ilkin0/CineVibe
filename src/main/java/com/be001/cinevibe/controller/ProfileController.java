@@ -1,6 +1,6 @@
 package com.be001.cinevibe.controller;
 
-import com.be001.cinevibe.dto.UserProfile;
+import com.be001.cinevibe.dto.UserProfileDTO;
 import com.be001.cinevibe.exceptions.NoDataFound;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.service.UserService;
@@ -31,7 +31,7 @@ public class ProfileController {
      */
     @GetMapping("/mine")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfile viewProfile() throws NoDataFound {
+    public UserProfileDTO viewProfile() throws NoDataFound {
         return service.getProfile();
     }
 
@@ -40,8 +40,8 @@ public class ProfileController {
      */
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserProfile> viewAllProfiles(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "10") int size) {
+    public List<UserProfileDTO> viewAllProfiles(@RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return service.findAllProfiles(pageable);
     }
@@ -51,7 +51,7 @@ public class ProfileController {
      */
     @PostMapping("/picture")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfile updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
+    public UserProfileDTO updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
         return service.updateProfilePicture(file);
     }
 
@@ -60,7 +60,7 @@ public class ProfileController {
      */
     @PutMapping("/username")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfile updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
+    public UserProfileDTO updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
         return service.updateUsername(username);
     }
 
@@ -69,7 +69,7 @@ public class ProfileController {
      */
     @PutMapping("/email")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfile updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
+    public UserProfileDTO updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
         return service.updateEmail(email);
     }
 
@@ -107,7 +107,7 @@ public class ProfileController {
      * Add the current user following.
      */
     @PostMapping("/follows/{followingId}")
-    public ResponseEntity<User> addColleague(@PathVariable Long followingId) throws NoDataFound {
+    public ResponseEntity<User> addFollow(@PathVariable Long followingId) throws NoDataFound {
         User updatedUser = service.addFollowers( followingId);
         return ResponseEntity.ok(updatedUser);
     }
@@ -116,7 +116,7 @@ public class ProfileController {
      * Remove the current user following.
      */
     @DeleteMapping("/follows/{followingId}")
-    public ResponseEntity<User> removeFriend(@PathVariable Long followingId) throws NoDataFound {
+    public ResponseEntity<User> removeFollow(@PathVariable Long followingId) throws NoDataFound {
         User updatedUser = service.removeFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }

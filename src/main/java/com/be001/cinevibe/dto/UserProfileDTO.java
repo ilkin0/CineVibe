@@ -1,6 +1,6 @@
 package com.be001.cinevibe.dto;
 
-public class UserProfile {
+public class UserProfileDTO {
 
     private String email;
 
@@ -8,7 +8,7 @@ public class UserProfile {
 
     private String urlProfile;
 
-    public UserProfile(String email, String username) {
+    public UserProfileDTO(String email, String username) {
         this.email = email;
         this.username = username;
     }
