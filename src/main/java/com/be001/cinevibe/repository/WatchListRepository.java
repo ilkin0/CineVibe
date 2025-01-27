@@ -19,7 +19,7 @@ public interface WatchListRepository extends JpaRepository<WatchList, Long> {
     @Query(value = """
             SELECT CASE WHEN COUNT(mtw) > 0 THEN TRUE ELSE FALSE END
             FROM movie_to_watchlist mtw
-            JOIN mtw.watchList wl
+            LEFT JOIN watch_lists wl ON mtw.watch_list_id = wl.id
             WHERE wl.id = :watchListId AND wl.user.id = :userId AND mtw.movie.id = :movieId
              """, nativeQuery = true)
     boolean existsByUserWatchListAndMovie(@Param("watchListId") Long watchListId,
@@ -30,7 +30,7 @@ public interface WatchListRepository extends JpaRepository<WatchList, Long> {
     @Query(value = """
             DELETE mtw
             FROM movie_to_watchlist mtw
-            LEFT JOIN watch_lists wl ON mtw.match_list_id = wl.id
+            LEFT JOIN watch_lists wl ON mtw.watch_list_id = wl.id
             WHERE wl.user_id = :userId AND mtw.watch_list_id = :watchListId AND mtw.movie_id = :movieId
             """, nativeQuery = true)
     void deleteByUserIdAndMovieId(@Param("userId") Long userId,
