@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/watchlist")
+@RequestMapping("/api/watchLists")
 public class WatchListController {
 
     private final WatchListService watchListService;
@@ -41,15 +41,17 @@ public class WatchListController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{userId}/{movieId}")
-    public ResponseEntity<String> addMovieToWatchList(@PathVariable("userId") Long userId, @PathVariable("movieId") Long movieId) throws RuntimeException{
-        watchListService.addToWatchList(userId, movieId);
+    @PostMapping("/{userId}/{watchListId}/movies/{movieId}")
+    public ResponseEntity<String> addMovieToWatchList(@PathVariable("userId") Long userId, @PathVariable("watchListId") Long watchListId, @PathVariable("movieId") Long movieId) throws RuntimeException{
+        watchListService.addToWatchList(userId, watchListId, movieId);
         return ResponseEntity.ok("Movie added successfully");
     }
 
-    @DeleteMapping("/{userId}/{movieId}")
-    public ResponseEntity<String> removeMovieFromWatchList(@PathVariable("userId") Long userId, @PathVariable("movieId") Long movieId) throws RuntimeException{
-        watchListService.removeMovieFromUserWatchList(userId, movieId);
+    //userId will be removed from path once we can get user from Context
+
+    @DeleteMapping("/{userId}/{watchListId}/movies/{movieId}")
+    public ResponseEntity<String> removeMovieFromWatchList(@PathVariable("userId") Long userId, @PathVariable("watchListId") Long watchListId, @PathVariable("movieId") Long movieId) throws RuntimeException{
+        watchListService.removeMovieFromUserWatchList(userId, watchListId, movieId);
         return ResponseEntity.ok("Movie removed successfully");
     }
 }

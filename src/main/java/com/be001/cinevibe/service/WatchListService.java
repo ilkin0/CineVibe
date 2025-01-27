@@ -51,15 +51,21 @@ public class WatchListService {
         watchListRepository.deleteById(watchListId);
     }
 
-    public void removeMovieFromUserWatchList(Long userId, Long movieId) {
-        if (userId == null || movieId == null) {
+    public void removeMovieFromUserWatchList(Long userId, Long watchListId, Long movieId) {
+        if (userId == null || movieId == null || watchListId == null) {
             throw new InvalidIdException("User id or movie id is null");
         }
-        watchListRepository.deleteByUserIdAndMovieId(userId, movieId);
+        watchListRepository.deleteByUserIdAndMovieId(userId, watchListId, movieId);
     }
 
-    public void addToWatchList(Long userId, Long movieId) {
-        watchListRepository.addMovieToUserWatchList(userId, movieId);
+    public void addToWatchList(Long userId, Long watchListId, Long movieId) {
+
+        boolean exists = watchListRepository.existsByUserWatchListAndMovie(userId, watchListId, movieId);
+
+        if(exists){
+            throw new IllegalArgumentException("This movie is already added to the specified watchlist");
+        }
+        watchListRepository.addMovieToUserWatchList(userId, watchListId, movieId);
     }
 
     public WatchListDTO createWatchList(Long userId, String title, List<Long> movieIds) {
