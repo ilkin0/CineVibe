@@ -30,77 +30,72 @@ public class ProfileController {
      * View the current user's profile.
      */
     @GetMapping("/mine")
-    @ResponseStatus(HttpStatus.OK)
-    public UserProfileDTO viewProfile() throws NoDataFound {
-        return service.getProfile();
+    public ResponseEntity<UserProfileDTO> viewProfile() throws NoDataFound {
+        return ResponseEntity.ok(service.getProfile());
     }
 
     /**
      * View all profiles by user
      */
     @GetMapping("/all")
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserProfileDTO> viewAllProfiles(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<List<UserProfileDTO>> viewAllProfiles(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return service.findAllProfiles(pageable);
+        return ResponseEntity.ok(service.findAllProfiles(pageable));
     }
 
     /**
      * Add the current user's profile's picture or change existing one.
      */
     @PostMapping("/picture")
-    @ResponseStatus(HttpStatus.OK)
-    public UserProfileDTO updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
-        return service.updateProfilePicture(file);
+    public ResponseEntity<UserProfileDTO> updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
+        return ResponseEntity.ok(service.updateProfilePicture(file));
     }
 
     /**
      * Update the username of the user. It gets user from principal and set a new username
      */
     @PutMapping("/username")
-    @ResponseStatus(HttpStatus.OK)
-    public UserProfileDTO updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
-        return service.updateUsername(username);
+    public ResponseEntity<UserProfileDTO> updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
+        return ResponseEntity.ok(service.updateUsername(username));
     }
 
     /**
      * Update the email of the user. It takes user from principal and set a new email
      */
     @PutMapping("/email")
-    @ResponseStatus(HttpStatus.OK)
-    public UserProfileDTO updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
-        return service.updateEmail(email);
+    public ResponseEntity<UserProfileDTO> updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
+        return ResponseEntity.ok(service.updateEmail(email));
     }
 
     /**
      * Deactivate profile by admin and moderator
      */
     @PostMapping("/deactivate/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('admin', 'moderator')")
-    public void deactivateProfile(@PathVariable @Positive Long id) throws NoDataFound {
+    public ResponseEntity<Void> deactivateProfile(@PathVariable @Positive Long id) throws NoDataFound {
         service.deactivateAccount(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
      * Activate profile by admin and moderator
      */
     @PostMapping("/activate/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('admin', 'moderator')")
-    public void activateProfile(@PathVariable @Positive Long id) throws NoDataFound {
+    public ResponseEntity<Void> activateProfile(@PathVariable @Positive Long id) throws NoDataFound {
         service.activateAccount(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
      * Delete profile by admin
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('admin')")
-    public void deleteProfileById(@PathVariable @Positive Long id) {
+    public ResponseEntity<Void> deleteProfileById(@PathVariable @Positive Long id) {
         service.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
@@ -108,7 +103,7 @@ public class ProfileController {
      */
     @PostMapping("/follows/{followingId}")
     public ResponseEntity<User> addFollow(@PathVariable Long followingId) throws NoDataFound {
-        User updatedUser = service.addFollowers( followingId);
+        User updatedUser = service.addFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }
 
