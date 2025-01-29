@@ -12,10 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     private final CustomUserDetailsService detailsService;
 
     public SecurityConfig(CustomUserDetailsService detailsService) {
@@ -32,7 +39,6 @@ public class SecurityConfig {
         var authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(detailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
-
         return authenticationProvider;
     }
 
@@ -43,18 +49,29 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("api/public/**"))
+                        .ignoringRequestMatchers("api/public/**","/api/v1/profile/**")
+                        .disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/movies")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated());
+                        auth ->
+                                auth.requestMatchers("/movies", "/api/v1/profile/**")
+                                        .permitAll());
 
         return httpSecurity.build();
+    }
+
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setMaxAge(3600L);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "x-xsrf-token", "Accept-language", "Access-Control-Allow-Headers", "Origin", "Accept", "X-Requested-With", "userId", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Expose-Headers", "X-Session-Id", "X-Platform"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
