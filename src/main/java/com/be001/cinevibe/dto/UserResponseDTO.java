@@ -8,7 +8,5 @@ import lombok.Setter;
 @Getter
 @Builder
 public class UserResponseDTO {
-    private Long id;
-    private String email;
-    private String username;
+    String message;
 }

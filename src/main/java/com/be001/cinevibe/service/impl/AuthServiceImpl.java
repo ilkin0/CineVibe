@@ -41,10 +41,7 @@ public class AuthServiceImpl implements AuthService {
 
     private UserResponseDTO mapToUserResponseDTO(User user) {
         return UserResponseDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .username(user.getUsername())
+                .message("SUCCESS")
                 .build();
     }
-
 }
