@@ -1,13 +1,18 @@
-package com.be001.cinevibe.service;
+package com.be001.cinevibe.service.impl;
 
 import com.be001.cinevibe.dto.RegisterRequest;
-import com.be001.cinevibe.dto.RegisterResponse;
 import com.be001.cinevibe.dto.SignInRequest;
 import com.be001.cinevibe.dto.SignInResponse;
+import com.be001.cinevibe.dto.UserResponseDTO;
 import com.be001.cinevibe.model.Token;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.model.enums.UserRole;
+import com.be001.cinevibe.service.JwtService;
+import com.be001.cinevibe.service.TokenService;
+import com.be001.cinevibe.service.UserService;
+import com.be001.cinevibe.service.interfaces.AuthService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,11 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Service
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
     @Value("${security.jwt.accessToken.expiration}")
     private long accessTokenExpiration;
 
@@ -34,9 +38,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final Logger log = Logger.getLogger(AuthService.class.getName());
-
-    public AuthService(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, TokenService tokenService, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, TokenService tokenService, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -44,7 +46,8 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public RegisterResponse registerUser(@Valid RegisterRequest request) {
+    @Override
+    public UserResponseDTO registerUser(@Valid RegisterRequest request) {
         String username = request.username();
         checkUsername(username);
 
@@ -63,18 +66,23 @@ public class AuthService {
                 true,
                 true);
 
-        return new RegisterResponse(userService.save(user).getUsername());
+        userService.save(user);
+
+        return UserResponseDTO.builder()
+                .message("SUCCESS")
+                .build();
     }
 
+    @Override
     public SignInResponse signInUser(SignInRequest request) {
-        log.log(Level.INFO, "User try singing in.");
+        log.info("User try singing in.");
 
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
             var authenticate = authenticationManager.authenticate(authenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authenticate);
         } catch (Exception e) {
-            log.severe("Username or password incorrect.");
+            log.info("Username or password incorrect.");
             throw new RuntimeException("Username or password incorrect.");
         }
         String accessToken = jwtService.generateAccessToken(request.username());
@@ -94,24 +102,25 @@ public class AuthService {
         return new SignInResponse(accessToken, refreshToken);
     }
 
+    @Override
     public void signOutUser(String authorizationHeader) throws Exception {
-        log.log(Level.INFO, "User is signing out.");
+        log.info("User is signing out.");
 
         if (!authorizationHeader.startsWith("Bearer ")) {
-            log.severe("Invalid Authorization header.");
+            log.error("Invalid Authorization header.");
             throw new Exception();
         }
 
         String accessToken = authorizationHeader.substring(7);
 
         if (!jwtService.isValidToken(accessToken, true)) {
-            log.severe("Invalid token provided for logout.");
+            log.error("Invalid token provided for logout.");
             throw new RuntimeException("Invalid token.");
         }
 
         Token token = tokenService.findByValue(accessToken);
         if (token == null) {
-            log.severe("Token not found in the database.");
+            log.error("Token not found in the database.");
             throw new RuntimeException("Token not found.");
         }
 
@@ -119,20 +128,20 @@ public class AuthService {
         token.setExpired(true);
         tokenService.save(token);
 
-        log.log(Level.INFO, "User successfully signed out.");
+        log.info("User successfully signed out.");
     }
 
 
     private void checkUsername(String username) {
         if (userService.existsByUsername(username)) {
-            log.severe("Username exist.");
+            log.error("Username exist.");
             throw new RuntimeException("Invalid username. Username exist.");
         }
     }
 
     private void checkEmail(String email) {
         if (userService.existsByEmail(email)) {
-            log.severe("Email exist.");
+            log.error("Email exist.");
             throw new RuntimeException("Invalid email. Email exist.");
         }
     }
@@ -157,15 +166,15 @@ public class AuthService {
             }
         }
         if (!isPasswordContainUpperCase) {
-            log.severe("Password doesn't contain uppercase character.");
+            log.error("Password doesn't contain uppercase character.");
             throw new RuntimeException("Invalid password. Password doesn't contain uppercase character.");
         }
         if (!isPasswordContainLowerCase) {
-            log.severe("Password doesn't contain lowercase character.");
+            log.error("Password doesn't contain lowercase character.");
             throw new RuntimeException("Invalid password. Password doesn't contain lowercase character.");
         }
         if (!isPasswordContainNumber) {
-            log.severe("Password doesn't contain number.");
+            log.error("Password doesn't contain number.");
             throw new RuntimeException("Invalid password. Password doesn't contain number.");
         }
     }

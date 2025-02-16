@@ -1,8 +1,8 @@
 package com.be001.cinevibe.dto;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record SignInRequest(@NotBlank String username,
-                            @NotBlank @Min(8) String password) {
+                            @Size(min = 8) String password) {
 }
