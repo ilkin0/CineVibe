@@ -135,11 +135,6 @@ public class AuthService {
             log.severe("Email exist.");
             throw new RuntimeException("Invalid email. Email exist.");
         }
-
-        if (!email.contains("@")) {
-            log.severe("Email must be contain @.");
-            throw new RuntimeException("Invalid email. Email must be contain @.");
-        }
     }
 
     private void checkPassword(String password) {
