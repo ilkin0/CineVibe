@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
     @Value("${security.jwt.accessToken.secret}")
     private String accessTokenSecret;
     @Value("${security.jwt.refreshToken.secret}")

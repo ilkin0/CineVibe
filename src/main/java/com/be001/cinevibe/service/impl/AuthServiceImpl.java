@@ -14,9 +14,9 @@ import com.be001.cinevibe.service.interfaces.AuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,29 +48,31 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserResponseDTO registerUser(@Valid RegisterRequest request) {
-        String username = request.username();
-        checkUsername(username);
+        try {
+            String username = request.username();
 
-        String email = request.email();
-        checkEmail(email);
+            String email = request.email();
 
-        String password = request.password();
-        checkPassword(password);
+            String password = request.password();
+            checkPassword(password);
 
-        User user = new User(email,
-                passwordEncoder.encode(password),
-                username,
-                UserRole.USER,
-                true,
-                true,
-                true,
-                true);
+            User user = new User(email,
+                    passwordEncoder.encode(password),
+                    username,
+                    UserRole.USER,
+                    true,
+                    true,
+                    true,
+                    true);
 
-        userService.save(user);
+            userService.save(user);
 
-        return UserResponseDTO.builder()
-                .message("SUCCESS")
-                .build();
+            return UserResponseDTO.builder()
+                    .message("SUCCESS")
+                    .build();
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("There is already user with the same email or username");
+        }
     }
 
     @Override
@@ -80,10 +82,10 @@ public class AuthServiceImpl implements AuthService {
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
             var authenticate = authenticationManager.authenticate(authenticationToken);
-            SecurityContextHolder.getContext().setAuthentication(authenticate);
+            if (authenticate == null) throw new RuntimeException("Username or password is not correct");
         } catch (Exception e) {
             log.info("Username or password incorrect.");
-            throw new RuntimeException("Username or password incorrect.");
+            throw new RuntimeException("Username or password incorrect." + e.getMessage());
         }
         String accessToken = jwtService.generateAccessToken(request.username());
         String refreshToken = jwtService.generateRefreshToken(request.username());
@@ -131,20 +133,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("User successfully signed out.");
     }
 
-
-    private void checkUsername(String username) {
-        if (userService.existsByUsername(username)) {
-            log.error("Username exist.");
-            throw new RuntimeException("Invalid username. Username exist.");
-        }
-    }
-
-    private void checkEmail(String email) {
-        if (userService.existsByEmail(email)) {
-            log.error("Email exist.");
-            throw new RuntimeException("Invalid email. Email exist.");
-        }
-    }
 
     private void checkPassword(String password) {
 

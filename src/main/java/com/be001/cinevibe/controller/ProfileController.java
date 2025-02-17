@@ -4,9 +4,11 @@ import com.be001.cinevibe.dto.UserProfileDTO;
 import com.be001.cinevibe.exceptions.NoDataFound;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("api/v1/profile")
 @RequiredArgsConstructor
@@ -41,41 +44,16 @@ public class ProfileController {
         return ResponseEntity.ok(service.findAllProfiles(pageable));
     }
 
-//    /**
-//     * Add the current user's profile's picture or change existing one.
-//     */
-//    @PostMapping("/picture")
-//    public ResponseEntity<UserProfileDTO> updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
-//        return ResponseEntity.ok(service.updateProfilePicture(file));
-//    }
-//
-//    /**
-//     * Update the username of the user. It gets user from principal and set a new username
-//     */
-//    @PutMapping("/username")
-//    public ResponseEntity<UserProfileDTO> updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
-//        return ResponseEntity.ok(service.updateUsername(username));
-//    }
-//
-//    /**
-//     * Update the email of the user. It takes user from principal and set a new email
-//     */
-//    @PutMapping("/email")
-//    public ResponseEntity<UserProfileDTO> updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
-//        return ResponseEntity.ok(service.updateEmail(email));
-//    }
-
-
     @PostMapping("/update")
-    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo) {
-        return service.updateProfile(profileInfo);
+    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo, HttpServletRequest request) {
+        return service.updateProfile(profileInfo, request);
     }
 
     /**
      * Deactivate profile by admin and moderator
      */
     @PostMapping("/deactivate/{id}")
-    @PreAuthorize("hasAnyAuthority('admin', 'moderator')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Void> deactivateProfile(@PathVariable @Positive Long id) throws NoDataFound {
         service.deactivateAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -85,7 +63,7 @@ public class ProfileController {
      * Activate profile by admin and moderator
      */
     @PostMapping("/activate/{id}")
-    @PreAuthorize("hasAnyAuthority('admin', 'moderator')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Void> activateProfile(@PathVariable @Positive Long id) throws NoDataFound {
         service.activateAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -95,7 +73,7 @@ public class ProfileController {
      * Delete profile by admin
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProfileById(@PathVariable @Positive Long id) {
         service.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -105,8 +83,8 @@ public class ProfileController {
      * Add the current user following.
      */
     @PostMapping("/follows/{followingId}")
-    public ResponseEntity<User> addFollow(@PathVariable Long followingId) throws NoDataFound {
-        User updatedUser = service.addFollowers(followingId);
+    public ResponseEntity<UserProfileDTO> addFollow(@PathVariable Long followingId) throws NoDataFound {
+        UserProfileDTO updatedUser = service.addFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -114,8 +92,8 @@ public class ProfileController {
      * Remove the current user following.
      */
     @DeleteMapping("/follows/{followingId}")
-    public ResponseEntity<User> removeFollow(@PathVariable Long followingId) throws NoDataFound {
-        User updatedUser = service.removeFollowers(followingId);
+    public ResponseEntity<UserProfileDTO> removeFollow(@PathVariable Long followingId) throws NoDataFound {
+        UserProfileDTO updatedUser = service.removeFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }
 }
