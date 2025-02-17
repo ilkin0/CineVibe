@@ -4,8 +4,7 @@ import com.be001.cinevibe.dto.UserProfileDTO;
 import com.be001.cinevibe.exceptions.NoDataFound;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.service.UserService;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -44,28 +41,34 @@ public class ProfileController {
         return ResponseEntity.ok(service.findAllProfiles(pageable));
     }
 
-    /**
-     * Add the current user's profile's picture or change existing one.
-     */
-    @PostMapping("/picture")
-    public ResponseEntity<UserProfileDTO> updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
-        return ResponseEntity.ok(service.updateProfilePicture(file));
-    }
+//    /**
+//     * Add the current user's profile's picture or change existing one.
+//     */
+//    @PostMapping("/picture")
+//    public ResponseEntity<UserProfileDTO> updateProfilePicture(@RequestParam("file") MultipartFile file) throws NoDataFound, IOException {
+//        return ResponseEntity.ok(service.updateProfilePicture(file));
+//    }
+//
+//    /**
+//     * Update the username of the user. It gets user from principal and set a new username
+//     */
+//    @PutMapping("/username")
+//    public ResponseEntity<UserProfileDTO> updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
+//        return ResponseEntity.ok(service.updateUsername(username));
+//    }
+//
+//    /**
+//     * Update the email of the user. It takes user from principal and set a new email
+//     */
+//    @PutMapping("/email")
+//    public ResponseEntity<UserProfileDTO> updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
+//        return ResponseEntity.ok(service.updateEmail(email));
+//    }
 
-    /**
-     * Update the username of the user. It gets user from principal and set a new username
-     */
-    @PutMapping("/username")
-    public ResponseEntity<UserProfileDTO> updateUsername(@RequestBody @NotBlank String username) throws NoDataFound {
-        return ResponseEntity.ok(service.updateUsername(username));
-    }
 
-    /**
-     * Update the email of the user. It takes user from principal and set a new email
-     */
-    @PutMapping("/email")
-    public ResponseEntity<UserProfileDTO> updateEmail(@RequestBody @Email @NotBlank String email) throws NoDataFound {
-        return ResponseEntity.ok(service.updateEmail(email));
+    @PostMapping("/update")
+    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo) {
+        return service.updateProfile(profileInfo);
     }
 
     /**

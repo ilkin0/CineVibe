@@ -7,13 +7,12 @@ import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -34,68 +33,59 @@ public class UserService {
     }
 
     public UserProfileDTO getProfile() throws NoDataFound {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof User user) {
-            log.info("Get profile request by " + user.getEmail());
-            return mapper.toProfile(user);
-        }
+        Optional<User> currentPrincipal = getPrincipal();
+        if (currentPrincipal.isPresent()) return mapper.toProfile(currentPrincipal.get());
         throw new NoDataFound("No principal found!");
     }
 
     public UserProfileDTO updateUsername(String username) throws NoDataFound {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof User user) {
-            user.setUsername(username);
-            log.info("Change profile request by " + user.getEmail());
-            return mapper.toProfile(repository.save(user));
+        Optional<User> currentPrincipal = getPrincipal();
+        if (currentPrincipal.isPresent()) {
+            currentPrincipal.get().setUsername(username);
+            return mapper.toProfile(repository.save(currentPrincipal.get()));
         }
         throw new NoDataFound("No principal found!");
     }
 
     public UserProfileDTO updateEmail(String email) throws NoDataFound {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof User user) {
-            user.setEmail(email);
-            log.info("Email update request by " + email);
-            return mapper.toProfile(repository.save(user));
+        Optional<User> currentPrincipal = getPrincipal();
+        if (currentPrincipal.isPresent()) {
+            currentPrincipal.get().setEmail(email);
+            return mapper.toProfile(repository.save(currentPrincipal.get()));
         }
         throw new NoDataFound("No Principal Found");
     }
 
-    public UserProfileDTO updateProfilePicture(MultipartFile file) throws NoDataFound, IOException, IOException {
-        if (file.isEmpty()) {
-            throw new NoDataFound("No file chosen!");
-        }
-
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof User user) {
-
-            String uploadDir = System.getProperty("user.dir") + "/profile-pictures";
-            String fileName = user.getEmail() + "_" + file.getOriginalFilename();
-            File targetFile = new File(uploadDir, fileName);
-
-            if (!targetFile.getParentFile().exists()) {
-                targetFile.getParentFile().mkdirs();
-            }
-
-            file.transferTo(targetFile);
-
-            String fileUrl = "/profile-pictures/" + fileName;
-
-            UserProfileDTO userProfile = getProfile();
-            userProfile.setUrlProfile(fileUrl);
-
-            repository.save(mapper.toEntity(user, userProfile));
-            log.info("Profile picture update request by " + user.getEmail());
-            return userProfile;
-        }
-        throw new NoDataFound("No principal found!");
-
-    }
+//    public UserProfileDTO updateProfilePicture(MultipartFile file) throws NoDataFound, IOException {
+//        if (file.isEmpty()) {
+//            throw new NoDataFound("No file chosen!");
+//        }
+//
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (principal instanceof User user) {
+//
+//            String uploadDir = System.getProperty("user.dir") + "/profile-pictures";
+//            String fileName = user.getEmail() + "_" + file.getOriginalFilename();
+//            File targetFile = new File(uploadDir, fileName);
+//
+//            if (!targetFile.getParentFile().exists()) {
+//                targetFile.getParentFile().mkdirs();
+//            }
+//
+//            file.transferTo(targetFile);
+//
+//            String fileUrl = "/profile-pictures/" + fileName;
+//
+//            UserProfileDTO userProfile = getProfile();
+//            userProfile.setUrlProfile(fileUrl);
+//
+//            repository.save(mapper.toEntity(user, userProfile));
+//            log.info("Profile picture update request by " + user.getEmail());
+//            return userProfile;
+//        }
+//        throw new NoDataFound("No principal found!");
+//
+//    }
 
     public void deactivateAccount(Long id) throws NoDataFound {
         User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
@@ -145,5 +135,23 @@ public class UserService {
             return repository.save(follower);
         }
         throw new NoDataFound("No principal found!");
+    }
+
+    public Optional<User> getPrincipal() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User user) {
+            return Optional.of(user);
+        }
+        return Optional.empty();
+    }
+
+    public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo) {
+        if (getPrincipal().isPresent()) {
+            String newEmail = profileInfo.getEmail();
+            String newUsername = profileInfo.getUsername();
+            UserProfileDTO userProfileDTO = new UserProfileDTO(newEmail, newUsername);
+            return ResponseEntity.ok(mapper.toProfile(repository.save(mapper.toEntity(getPrincipal().get(), userProfileDTO))));
+        }
+        return ResponseEntity.notFound().build();
     }
 }
