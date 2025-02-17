@@ -88,7 +88,6 @@ public class UserService {
         throw new NoDataFound("No principal found!");
     }
 
-    @Transactional
     public UserProfileDTO removeFollowers(Long followingId) throws NoDataFound {
 
         if (getPrincipal().isPresent()) {
