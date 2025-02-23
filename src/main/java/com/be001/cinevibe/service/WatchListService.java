@@ -6,7 +6,7 @@ import com.be001.cinevibe.model.WatchList;
 import com.be001.cinevibe.repository.MovieRepository;
 import com.be001.cinevibe.repository.UserRepository;
 import com.be001.cinevibe.repository.WatchListRepository;
-import com.be001.cinevibe.dto.MovieDTOMock;
+import com.be001.cinevibe.dto.MovieDTO;
 import com.be001.cinevibe.dto.WatchListDTO;
 import com.be001.cinevibe.exception.InvalidIdException;
 import com.be001.cinevibe.exception.UserNotFoundException;
@@ -85,7 +85,7 @@ public class WatchListService {
                 .title(watchList.getTitle())
                 .movieList(watchList.getMovies()
                         .stream().map(
-                                movie -> MovieDTOMock.builder()
+                                movie -> MovieDTO.builder()
                                         .title(movie.getTitle())
                                         .averageRating(movie.getAverageRating())
                                         .releaseYear(movie.getReleaseYear())

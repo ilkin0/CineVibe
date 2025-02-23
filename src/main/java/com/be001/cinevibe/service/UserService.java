@@ -9,7 +9,6 @@ import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +29,7 @@ public class UserService {
 
     private final ProfileMapper mapper;
 
-    public UserService(UserRepository userRepository, TokenService tokenService, @Qualifier("profileMapperImpl") ProfileMapper mapper) {
+    public UserService(UserRepository userRepository, TokenService tokenService, ProfileMapper mapper) {
         this.repository = userRepository;
         this.tokenService = tokenService;
         this.mapper = mapper;
@@ -90,14 +89,12 @@ public class UserService {
         User following = repository.findById(followingId)
                 .orElseThrow(() -> new RuntimeException("Following not found"));
 
-        follower.getFollows().forEach(System.out::println);
-
         follower.getFollows().remove(following);
 
         return mapper.toProfile(repository.save(follower));
     }
 
-    public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) {
+    public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFound {
 
         String newEmail = profileInfo.getEmail();
         String newUsername = profileInfo.getUsername();

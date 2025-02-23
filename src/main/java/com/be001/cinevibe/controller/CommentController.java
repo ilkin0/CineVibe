@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/comment")
+@RequestMapping("api/v1/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
@@ -28,7 +28,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getAll());
     }
 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CommentDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(commentService.getById(id));
     }
@@ -38,12 +38,12 @@ public class CommentController {
         return ResponseEntity.ok(commentService.create(content));
     }
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> update(@PathVariable Long id, @RequestBody CommentRequestDTO commentRequestDTO) {
         return ResponseEntity.ok(commentService.update(id, commentRequestDTO));
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         commentService.delete(id);
     }

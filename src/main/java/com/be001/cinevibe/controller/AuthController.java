@@ -27,14 +27,14 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/sign-in")
     public ResponseEntity<SignInResponseDTO> signIn(@RequestBody @Valid SignInRequestDTO request) {
         log.info("Some user try signIn.");
         var signInResponse = authService.signInUser(request);
         return new ResponseEntity<>(signInResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/signout")
+    @PostMapping("/sign-out")
     public ResponseEntity<String> signOut(@RequestHeader("Authorization") String authorizationHeader) {
         log.info("Some user is trying to sign out.");
 
@@ -42,7 +42,7 @@ public class AuthController {
             authService.signOutUser(authorizationHeader);
             return new ResponseEntity<>("Successfully signed out.", HttpStatus.OK);
         } catch (RuntimeException e) {
-            log.error("Sign out failed: " + e.getMessage());
+            log.error("Sign out failed: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }catch (Exception e){
             return new ResponseEntity<>("Invalid Authorization header.", HttpStatus.BAD_REQUEST);

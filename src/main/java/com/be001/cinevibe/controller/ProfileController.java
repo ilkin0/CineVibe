@@ -19,7 +19,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("api/v1/profile")
+@RequestMapping("api/v1/profiles")
 @RequiredArgsConstructor
 public class ProfileController {
 
@@ -47,7 +47,7 @@ public class ProfileController {
      * Update the current user's profile.
      */
     @PostMapping("/update")
-    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo, HttpServletRequest request) {
+    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFound {
         return service.updateProfile(profileInfo, request);
     }
 
