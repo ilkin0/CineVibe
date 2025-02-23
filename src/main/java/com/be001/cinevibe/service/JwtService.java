@@ -55,11 +55,6 @@ public class JwtService {
         }
     }
 
-    private Date extractExpirationDate(String token, boolean isAccessToken) {
-        Claims claims = extractClaims(token, isAccessToken);
-        return claims.getExpiration();
-    }
-
     public String extractUsername(String token, boolean isAccessToken) {
         Claims claims = extractClaims(token, isAccessToken);
         return claims.getSubject();
