@@ -1,4 +1,4 @@
-package com.be001.cinevibe.model.dto;
+package com.be001.cinevibe.dto;
 
 import lombok.Builder;
 
@@ -6,6 +6,7 @@ import lombok.Builder;
 public class CommentRequestDTO {
 
     private String content;
+
     public String getContent() {
         return content;
     }
@@ -13,7 +14,5 @@ public class CommentRequestDTO {
     public void setContent(String content) {
         this.content = content;
     }
-
-
 
 }

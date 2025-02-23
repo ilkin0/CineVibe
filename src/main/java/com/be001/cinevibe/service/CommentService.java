@@ -1,9 +1,9 @@
 package com.be001.cinevibe.service;
 
+import com.be001.cinevibe.dto.CommentDTO;
+import com.be001.cinevibe.dto.CommentRequestDTO;
+import com.be001.cinevibe.exception.CommentNotFoundException;
 import com.be001.cinevibe.model.Comment;
-import com.be001.cinevibe.model.dto.CommentDTO;
-import com.be001.cinevibe.model.dto.CommentNotFoundException;
-import com.be001.cinevibe.model.dto.CommentRequestDTO;
 import com.be001.cinevibe.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class CommentService {
     }
 
     public CommentDTO update(Long id, CommentRequestDTO commentDTO) {
-        Comment comment=commentRepository.findById(id)
+        Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
         comment.setContent(commentDTO.getContent());
         comment.setUpdatedAt(LocalDateTime.now());
@@ -46,16 +46,15 @@ public class CommentService {
     }
 
     public void delete(Long id) {
-        Comment comment=commentRepository.findById(id)
+        Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
         commentRepository.deleteById(comment.getId());
 
     }
 
-
     private Comment mapCommentDTOToComment(CommentDTO commentDTO) {
         return Comment.builder()
-                .content(commentDTO.getContent())
+                .content(commentDTO.content())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -66,5 +65,4 @@ public class CommentService {
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
-
 }
