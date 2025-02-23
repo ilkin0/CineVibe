@@ -38,7 +38,7 @@ public class UserService {
     public User findByUsername(String username) {
         return repository
                 .findByUsername(username).orElseThrow(() -> {
-                            log.info("User with username " + username + " not found");
+                    log.info("User with username {} not found", username);
                             return new UsernameNotFoundException("User not found");
                         }
                 );
@@ -52,14 +52,14 @@ public class UserService {
         User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
         user.setEnabled(false);
         repository.save(user);
-        log.warn("Account is disabled: " + user.getEmail());
+        log.warn("Account is disabled: {}", user.getEmail());
     }
 
     public void activateAccount(Long id) throws NoDataFound {
         User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
         user.setEnabled(true);
         repository.save(user);
-        log.warn("Account is enabled: " + user.getEmail());
+        log.warn("Account is enabled: {}", user.getEmail());
     }
 
     public List<UserProfileDTO> findAllProfiles(Pageable pageable) {
@@ -68,7 +68,7 @@ public class UserService {
 
     public void deleteById(Long id) {
         repository.deleteById(id);
-        log.warn("Account is deleted by id" + id);
+        log.warn("Account is deleted by id{}", id);
     }
 
     public UserProfileDTO addFollowers(Long followingId) throws NoDataFound {

@@ -16,6 +16,7 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    public static final String COMMENT_ERROR = "Comment not found";
 
     public List<CommentDTO> getAll() {
         List<Comment> commentList = commentRepository.findAll();
@@ -24,7 +25,7 @@ public class CommentService {
 
     public CommentDTO getById(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_ERROR));
         return mapCommentToCommentDTO(comment);
     }
 
@@ -38,7 +39,7 @@ public class CommentService {
 
     public CommentDTO update(Long id, CommentRequestDTO commentDTO) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_ERROR));
         comment.setContent(commentDTO.content());
         comment.setUpdatedAt(LocalDateTime.now());
         commentRepository.save(comment);
@@ -47,16 +48,9 @@ public class CommentService {
 
     public void delete(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_ERROR));
         commentRepository.deleteById(comment.getId());
 
-    }
-
-    private Comment mapCommentDTOToComment(CommentDTO commentDTO) {
-        return Comment.builder()
-                .content(commentDTO.content())
-                .createdAt(LocalDateTime.now())
-                .build();
     }
 
     private CommentDTO mapCommentToCommentDTO(Comment comment) {
