@@ -2,14 +2,19 @@ package com.be001.cinevibe.model;
 
 import com.be001.cinevibe.model.enums.UserRole;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Builder
 @Entity
 @Table(name = "users")
 public class User {
@@ -17,27 +22,21 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    private String urlProfile;
-
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-
-    private Boolean enabled;
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
@@ -51,180 +50,30 @@ public class User {
             joinColumns = @JoinColumn(name = "follow_by"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    private Set<User> follows=new HashSet<>();
+    private Set<User> follows = new HashSet<>();
 
-    private boolean isAccountNonExpired;
+    @OneToMany(mappedBy = "user")
+    private List<WatchList> watchList;
 
-    private boolean isAccountNonLocked;
+    private boolean isAccountNonExpired = true;
 
-    private boolean isCredentialsNonExpired;
+    private boolean isAccountNonLocked = true;
 
-    private boolean isEnabled;
+    private boolean isCredentialsNonExpired = true;
 
-    public User(String email, String password, String username, UserRole userRole, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean enabled, String urlProfile) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.userRole = userRole;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.enabled = enabled;
-        this.urlProfile = urlProfile;
-    }
-
-    public User(String email, String password, String username) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-    }
-
-    public Set<User> getFollows() {
-        return follows;
-    }
-
-    public void setFollows(Set<User> follows) {
-        this.follows = follows;
-    }
-
-    public User() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public UserRole getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public String getUrlProfile() {
-        return urlProfile;
-    }
-
-    public void setUrlProfile(String urlProfile) {
-        this.urlProfile = urlProfile;
-    }
-
-    public boolean isAccountNonExpired() {
-        return isAccountNonExpired;
-    }
-
-    public void setAccountNonExpired(boolean accountNonExpired) {
-        isAccountNonExpired = accountNonExpired;
-    }
-
-    public boolean isAccountNonLocked() {
-        return isAccountNonLocked;
-    }
-
-    public void setAccountNonLocked(boolean accountNonLocked) {
-        isAccountNonLocked = accountNonLocked;
-    }
-
-    public boolean isCredentialsNonExpired() {
-        return isCredentialsNonExpired;
-    }
-
-    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
-        isCredentialsNonExpired = credentialsNonExpired;
-    }
-
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
+    private boolean isEnabled = true;
 
     public CustomUserDetails userDetails() {
         return new CustomUserDetails(this);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", username='" + username + '\'' +
-                ", userRole=" + userRole +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", enabled=" + enabled +
-                '}';
+    @PrePersist
+    private void onCreate() {
+        updatedAt = createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
