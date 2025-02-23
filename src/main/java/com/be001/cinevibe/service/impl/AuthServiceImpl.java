@@ -59,6 +59,10 @@ public class AuthServiceImpl implements AuthService {
                 password(passwordEncoder.encode(password)).
                 username(username).
                 userRole(UserRole.USER).
+                isEnabled(true).
+                isAccountNonExpired(true).
+                isAccountNonLocked(true).
+                isCredentialsNonExpired(true).
                 build();
 
         userService.save(user);
@@ -71,10 +75,13 @@ public class AuthServiceImpl implements AuthService {
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
             var authenticate = authenticationManager.authenticate(authenticationToken);
-            if (authenticate == null) throw new RuntimeException("Username or password is not correct");
-        } catch (Exception e) {
+            if (authenticate == null) throw new IllegalArgumentException("Username or password is not correct");
+        } catch (IllegalArgumentException e) {
             log.info("Username or password incorrect.");
             throw new RuntimeException("Username or password incorrect." + e.getMessage());
+        }catch (Exception e) {
+            log.error("Something happen unExpected.");
+            throw new RuntimeException("Something happen unExpected." + e.getMessage());
         }
         String accessToken = jwtService.generateAccessToken(request.username());
         String refreshToken = jwtService.generateRefreshToken(request.username());

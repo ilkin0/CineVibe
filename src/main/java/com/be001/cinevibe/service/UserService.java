@@ -38,7 +38,7 @@ public class UserService {
     public User findByUsername(String username) {
         return repository
                 .findByUsername(username).orElseThrow(() -> {
-                    log.info("User with username {} not found", username);
+                            log.info("User with username {} not found", username);
                             return new UsernameNotFoundException("User not found");
                         }
                 );
@@ -67,6 +67,7 @@ public class UserService {
     }
 
     public void deleteById(Long id) {
+        tokenService.deleteByUserId(id);
         repository.deleteById(id);
         log.warn("Account is deleted by id{}", id);
     }
@@ -95,12 +96,8 @@ public class UserService {
     }
 
     public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFound {
-
-        String newEmail = profileInfo.getEmail();
-        String newUsername = profileInfo.getUsername();
-
-        UserProfileDTO userProfileDTO = new UserProfileDTO(newEmail, newUsername);
-        ResponseEntity<UserProfileDTO> user = ResponseEntity.ok(mapper.toProfile(repository.save(mapper.toEntity(getPrincipal(), userProfileDTO))));
+        ResponseEntity<UserProfileDTO> user = ResponseEntity.ok(mapper.
+                toProfile(repository.save(mapper.toEntity(getPrincipal(), profileInfo))));
 
         String token = request.getHeader("Authorization").substring(7);
         Token byValue = tokenService.findByValue(token);

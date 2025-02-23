@@ -57,6 +57,7 @@ public class ProfileController {
     @PostMapping("/deactivate/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Void> deactivateProfile(@PathVariable @Positive Long id) throws NoDataFound {
+        log.info("You try deactivate some user.");
         service.deactivateAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -67,6 +68,7 @@ public class ProfileController {
     @PostMapping("/activate/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Void> activateProfile(@PathVariable @Positive Long id) throws NoDataFound {
+        log.info("You try activate some user.");
         service.activateAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

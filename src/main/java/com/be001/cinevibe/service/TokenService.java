@@ -18,7 +18,7 @@ public class TokenService {
         Token token = null;
         try {
             token = tokenRepository.findByValue(value).orElseThrow();
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot find token.");
         }
         return token;
@@ -26,5 +26,9 @@ public class TokenService {
 
     public Token save(Token token) {
         return tokenRepository.save(token);
+    }
+
+    public void deleteByUserId(Long userId) {
+        tokenRepository.deleteByUserId(userId);
     }
 }
