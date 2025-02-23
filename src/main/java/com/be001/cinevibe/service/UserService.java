@@ -73,6 +73,8 @@ public class UserService {
     }
 
     public UserProfileDTO addFollowers(Long followingId) throws NoDataFound {
+        log.info("You try add some follow.");
+
         User follower = getPrincipal();
         User following = repository.findById(followingId)
                 .orElseThrow(() -> new RuntimeException("Following not found"));
@@ -84,7 +86,9 @@ public class UserService {
         return mapper.toProfile(repository.save(follower));
     }
 
-    public UserProfileDTO removeFollowers(Long followingId) throws NoDataFound {
+    public void removeFollowers(Long followingId) throws NoDataFound {
+        log.info("You try remove some follow.");
+
         User follower = getPrincipal();
 
         User following = repository.findById(followingId)
@@ -92,7 +96,8 @@ public class UserService {
 
         follower.getFollows().remove(following);
 
-        return mapper.toProfile(repository.save(follower));
+        repository.deleteFollowRelation(follower.getId(), followingId);
+        repository.save(follower);
     }
 
     public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFound {

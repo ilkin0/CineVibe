@@ -96,9 +96,9 @@ public class ProfileController {
      * Remove the current user following.
      */
     @DeleteMapping("/follows/{followingId}")
-    public ResponseEntity<UserProfileDTO> removeFollow(@PathVariable Long followingId) throws NoDataFound {
-        UserProfileDTO updatedUser = service.removeFollowers(followingId);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<Void> removeFollow(@PathVariable Long followingId) throws NoDataFound {
+        service.removeFollowers(followingId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
 
