@@ -1,7 +1,7 @@
 package com.be001.cinevibe.service;
 
 import com.be001.cinevibe.dto.UserProfileDTO;
-import com.be001.cinevibe.exceptions.NoDataFound;
+import com.be001.cinevibe.exception.NoDataFoundException;
 import com.be001.cinevibe.mapper.ProfileMapper;
 import com.be001.cinevibe.model.CustomUserDetails;
 import com.be001.cinevibe.model.Token;
@@ -44,19 +44,19 @@ public class UserService {
                 );
     }
 
-    public UserProfileDTO getProfile() throws NoDataFound {
+    public UserProfileDTO getProfile() throws NoDataFoundException {
         return mapper.toProfile(getPrincipal());
     }
 
-    public void deactivateAccount(Long id) throws NoDataFound {
-        User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
+    public void deactivateAccount(Long id) throws NoDataFoundException {
+        User user = repository.findById(id).orElseThrow(() -> new NoDataFoundException("No user found by given id"));
         user.setEnabled(false);
         repository.save(user);
         log.warn("Account is disabled: {}", user.getEmail());
     }
 
-    public void activateAccount(Long id) throws NoDataFound {
-        User user = repository.findById(id).orElseThrow(() -> new NoDataFound("No user found by given id"));
+    public void activateAccount(Long id) throws NoDataFoundException {
+        User user = repository.findById(id).orElseThrow(() -> new NoDataFoundException("No user found by given id"));
         user.setEnabled(true);
         repository.save(user);
         log.warn("Account is enabled: {}", user.getEmail());
@@ -72,7 +72,7 @@ public class UserService {
         log.warn("Account is deleted by id{}", id);
     }
 
-    public UserProfileDTO addFollowers(Long followingId) throws NoDataFound {
+    public UserProfileDTO addFollowers(Long followingId) throws NoDataFoundException {
         log.info("You try add some follow.");
 
         User follower = getPrincipal();
@@ -86,7 +86,7 @@ public class UserService {
         return mapper.toProfile(repository.save(follower));
     }
 
-    public void removeFollowers(Long followingId) throws NoDataFound {
+    public void removeFollowers(Long followingId) throws NoDataFoundException {
         log.info("You try remove some follow.");
 
         User follower = getPrincipal();
@@ -100,7 +100,7 @@ public class UserService {
         repository.save(follower);
     }
 
-    public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFound {
+    public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFoundException {
         ResponseEntity<UserProfileDTO> user = ResponseEntity.ok(mapper.
                 toProfile(repository.save(mapper.toEntity(getPrincipal(), profileInfo))));
 
@@ -118,14 +118,14 @@ public class UserService {
         repository.save(user);
     }
 
-    public User getPrincipal() throws NoDataFound {
+    public User getPrincipal() throws NoDataFoundException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> user = Optional.empty();
         if (principal instanceof CustomUserDetails details) {
             user = Optional.of(details.getUser());
         }
         if (user.isEmpty()) {
-            throw new NoDataFound("No principal found!");
+            throw new NoDataFoundException("No principal found!");
         }
         return user.get();
     }

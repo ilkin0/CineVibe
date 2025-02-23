@@ -1,7 +1,7 @@
 package com.be001.cinevibe.controller;
 
 import com.be001.cinevibe.dto.UserProfileDTO;
-import com.be001.cinevibe.exceptions.NoDataFound;
+import com.be001.cinevibe.exception.NoDataFoundException;
 import com.be001.cinevibe.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -29,7 +29,7 @@ public class ProfileController {
      * View the current user's profile.
      */
     @GetMapping("/mine")
-    public ResponseEntity<UserProfileDTO> viewProfile() throws NoDataFound {
+    public ResponseEntity<UserProfileDTO> viewProfile() throws NoDataFoundException {
         return ResponseEntity.ok(service.getProfile());
     }
 
@@ -47,7 +47,7 @@ public class ProfileController {
      * Update the current user's profile.
      */
     @PostMapping("/update")
-    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFound {
+    public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFoundException {
         return service.updateProfile(profileInfo, request);
     }
 
@@ -56,7 +56,7 @@ public class ProfileController {
      */
     @PostMapping("/deactivate/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<Void> deactivateProfile(@PathVariable @Positive Long id) throws NoDataFound {
+    public ResponseEntity<Void> deactivateProfile(@PathVariable @Positive Long id) throws NoDataFoundException {
         log.info("You try deactivate some user.");
         service.deactivateAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -67,7 +67,7 @@ public class ProfileController {
      */
     @PostMapping("/activate/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<Void> activateProfile(@PathVariable @Positive Long id) throws NoDataFound {
+    public ResponseEntity<Void> activateProfile(@PathVariable @Positive Long id) throws NoDataFoundException {
         log.info("You try activate some user.");
         service.activateAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -87,7 +87,7 @@ public class ProfileController {
      * Add the current user following.
      */
     @PostMapping("/follows/{followingId}")
-    public ResponseEntity<UserProfileDTO> addFollow(@PathVariable Long followingId) throws NoDataFound {
+    public ResponseEntity<UserProfileDTO> addFollow(@PathVariable Long followingId) throws NoDataFoundException {
         UserProfileDTO updatedUser = service.addFollowers(followingId);
         return ResponseEntity.ok(updatedUser);
     }
@@ -96,7 +96,7 @@ public class ProfileController {
      * Remove the current user following.
      */
     @DeleteMapping("/follows/{followingId}")
-    public ResponseEntity<Void> removeFollow(@PathVariable Long followingId) throws NoDataFound {
+    public ResponseEntity<Void> removeFollow(@PathVariable Long followingId) throws NoDataFoundException {
         service.removeFollowers(followingId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

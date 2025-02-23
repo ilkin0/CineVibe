@@ -2,7 +2,7 @@ package com.be001.cinevibe.service;
 
 import com.be001.cinevibe.dto.CommentDTO;
 import com.be001.cinevibe.dto.CommentRequestDTO;
-import com.be001.cinevibe.exception.CommentNotFoundException;
+import com.be001.cinevibe.exception.NoDataFoundException;
 import com.be001.cinevibe.model.Comment;
 import com.be001.cinevibe.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class CommentService {
 
     public CommentDTO getById(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException(COMMENT_ERROR));
+                .orElseThrow(() -> new NoDataFoundException(COMMENT_ERROR));
         return mapCommentToCommentDTO(comment);
     }
 
@@ -39,7 +39,7 @@ public class CommentService {
 
     public CommentDTO update(Long id, CommentRequestDTO commentDTO) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException(COMMENT_ERROR));
+                .orElseThrow(() -> new NoDataFoundException(COMMENT_ERROR));
         comment.setContent(commentDTO.content());
         comment.setUpdatedAt(LocalDateTime.now());
         commentRepository.save(comment);
@@ -48,7 +48,7 @@ public class CommentService {
 
     public void delete(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException(COMMENT_ERROR));
+                .orElseThrow(() -> new NoDataFoundException(COMMENT_ERROR));
         commentRepository.deleteById(comment.getId());
 
     }

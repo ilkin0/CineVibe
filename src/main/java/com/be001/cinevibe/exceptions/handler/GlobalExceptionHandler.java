@@ -1,6 +1,6 @@
 package com.be001.cinevibe.exceptions.handler;
 
-import com.be001.cinevibe.exceptions.NoDataFound;
+import com.be001.cinevibe.exception.NoDataFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NoDataFound.class)
+    @ExceptionHandler(NoDataFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNoDataFoundException(NoDataFound noDataFound) {
-        return ResponseEntity.ok(noDataFound.getMessage());
+    public ResponseEntity<String> handleNoDataFoundException(NoDataFoundException noDataFoundException) {
+        return ResponseEntity.ok(noDataFoundException.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
