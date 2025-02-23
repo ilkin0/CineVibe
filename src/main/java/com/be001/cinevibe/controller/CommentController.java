@@ -1,6 +1,6 @@
 package com.be001.cinevibe.controller;
 
-import com.be001.cinevibe.model.dto.CommentDTO;
+import com.be001.cinevibe.dto.CommentDTO;
 import com.be001.cinevibe.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

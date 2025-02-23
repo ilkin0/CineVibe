@@ -1,8 +1,8 @@
 package com.be001.cinevibe.service;
 
 import com.be001.cinevibe.model.Comment;
-import com.be001.cinevibe.model.dto.CommentDTO;
-import com.be001.cinevibe.model.dto.CommentNotFoundException;
+import com.be001.cinevibe.dto.CommentDTO;
+import com.be001.cinevibe.exception.CommentNotFoundException;
 import com.be001.cinevibe.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
