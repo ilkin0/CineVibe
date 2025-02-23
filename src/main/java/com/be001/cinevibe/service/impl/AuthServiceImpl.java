@@ -10,12 +10,15 @@ import com.be001.cinevibe.service.JwtService;
 import com.be001.cinevibe.service.TokenService;
 import com.be001.cinevibe.service.UserService;
 import com.be001.cinevibe.service.interfaces.AuthService;
-import jakarta.validation.Valid;
+import com.be001.cinevibe.util.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,106 +49,117 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void registerUser(@Valid RegisterRequestDTO request) {
-        String username = request.username();
+    public ResponseEntity<BaseResponse<String>> registerUser(RegisterRequestDTO request) {
+        try {
+            String username = request.username();
 
-        String email = request.email();
+            String email = request.email();
 
-        String password = request.password();
-        checkPassword(password);
+            String password = request.password();
 
-        User user = User.builder().
-                email(email).
-                password(passwordEncoder.encode(password)).
-                username(username).
-                userRole(UserRole.USER).
-                isEnabled(true).
-                isAccountNonExpired(true).
-                isAccountNonLocked(true).
-                isCredentialsNonExpired(true).
-                build();
+            User user = User.builder().
+                    email(email).
+                    password(passwordEncoder.encode(password)).
+                    username(username).
+                    userRole(UserRole.USER).
+                    isEnabled(true).
+                    isAccountNonExpired(true).
+                    isAccountNonLocked(true).
+                    isCredentialsNonExpired(true).
+                    build();
 
-        userService.save(user);
+            userService.save(user);
+            return new ResponseEntity<>(BaseResponse.message("Successful registration."), HttpStatus.CREATED);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(BaseResponse.fail("Username or email already exists. "), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
-    public SignInResponseDTO signInUser(SignInRequestDTO request) {
-        log.info("User try singing in.");
-
+    public <T> ResponseEntity<BaseResponse<T>> signInUser(SignInRequestDTO request) {
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
-            var authenticate = authenticationManager.authenticate(authenticationToken);
-            if (authenticate == null) throw new IllegalArgumentException("Username or password is not correct");
-        } catch (IllegalArgumentException e) {
-            log.info("Username or password incorrect.");
-            throw new RuntimeException("Username or password incorrect." + e.getMessage());
-        }catch (Exception e) {
-            log.error("Something happen unExpected.");
-            throw new RuntimeException("Something happen unExpected." + e.getMessage());
+            Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+
+            if (authenticate == null) {
+                log.info("Username or password incorrect.");
+                throw new BadCredentialsException("Username or password is incorrect.");
+            }
+
+            var user = userService.findByUsername(request.username());
+            if (user == null) {
+                log.info("User not found: {}", request.username());
+                throw new UsernameNotFoundException("User not found.");
+            }
+
+            String accessToken = jwtService.generateAccessToken(request.username());
+            String refreshToken = jwtService.generateRefreshToken(request.username());
+
+            Token token = new Token(
+                    accessToken,
+                    Instant.now(),
+                    Instant.now().plusSeconds(accessTokenExpiration),
+                    false,
+                    false,
+                    user
+            );
+
+            tokenService.save(token);
+
+            SignInResponseDTO responseDTO = new SignInResponseDTO(accessToken, refreshToken);
+            BaseResponse<T> response = new BaseResponse<>("Sign-in successful. ", true, (T) responseDTO);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (BadCredentialsException e) {
+            log.warn("Authentication failed: {}", e.getMessage());
+            return new ResponseEntity<>(
+                    new BaseResponse<>("Invalid username or password. ", false, null),
+                    HttpStatus.UNAUTHORIZED
+            );
+
+        } catch (LockedException e) {
+            log.warn("User account is locked: {}", e.getMessage());
+            return new ResponseEntity<>(
+                    new BaseResponse<>("Your account is locked. Please contact support.", false, null),
+                    HttpStatus.LOCKED
+            );
+
+        } catch (DisabledException e) {
+            log.warn("User account is disabled: {}", e.getMessage());
+            return new ResponseEntity<>(
+                    new BaseResponse<>("Your account is disabled. Please contact support.", false, null),
+                    HttpStatus.FORBIDDEN
+            );
+        } catch (UsernameNotFoundException e) {
+            log.warn("User not found: {}", e.getMessage());
+            return new ResponseEntity<>(
+                    new BaseResponse<>("User not found. ", false, null),
+                    HttpStatus.NOT_FOUND
+            );
+
+        } catch (Exception e) {
+            log.error("Unexpected error during sign-in: {}", e.getMessage());
+            return new ResponseEntity<>(
+                    new BaseResponse<>("An unexpected error occurred. ", false, null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
-        String accessToken = jwtService.generateAccessToken(request.username());
-        String refreshToken = jwtService.generateRefreshToken(request.username());
-
-        Token token = new Token(accessToken,
-                Instant.now(),
-                Instant.now()
-                        .plusSeconds(accessTokenExpiration),
-                false,
-                false,
-                userService.findByUsername(request.username())
-        );
-
-        tokenService.save(token);
-
-        return new SignInResponseDTO(accessToken, refreshToken);
     }
 
     @Override
-    public void signOutUser(String authorizationHeader) throws Exception {
-        log.info("User is signing out.");
-
+    public ResponseEntity<BaseResponse<String>> signOutUser(String authorizationHeader) {
         String accessToken = authorizationHeader.substring(7);
 
         Token token = tokenService.findByValue(accessToken);
+
         if (token != null) {
             token.setRevoked(true);
             token.setExpired(true);
             tokenService.save(token);
+            return new ResponseEntity<>(BaseResponse.message("User successfully signed out. "), HttpStatus.OK);
         }
 
-        log.info("User successfully signed out.");
-    }
-
-
-    private void checkPassword(String password) {
-
-        boolean isPasswordContainNumber = false,
-                isPasswordContainLowerCase = false,
-                isPasswordContainUpperCase = false;
-
-        for (int i = 0; i < password.length(); i++) {
-            char c = password.charAt(i);
-            if (!isPasswordContainNumber && c > 47 && c < 58) {
-                isPasswordContainNumber = true;
-            }
-            if (!isPasswordContainLowerCase && c > 96 && c < 123) {
-                isPasswordContainLowerCase = true;
-            }
-            if (!isPasswordContainUpperCase && c > 64 && c < 91) {
-                isPasswordContainUpperCase = true;
-            }
-        }
-        if (!isPasswordContainUpperCase) {
-            log.error("Password doesn't contain uppercase character.");
-            throw new RuntimeException("Invalid password. Password doesn't contain uppercase character.");
-        }
-        if (!isPasswordContainLowerCase) {
-            log.error("Password doesn't contain lowercase character.");
-            throw new RuntimeException("Invalid password. Password doesn't contain lowercase character.");
-        }
-        if (!isPasswordContainNumber) {
-            log.error("Password doesn't contain number.");
-            throw new RuntimeException("Invalid password. Password doesn't contain number.");
-        }
+        return new ResponseEntity<>(BaseResponse.fail("Error happened while signing out. "), HttpStatus.BAD_REQUEST);
     }
 }

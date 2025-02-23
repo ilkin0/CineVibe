@@ -2,12 +2,13 @@ package com.be001.cinevibe.service.interfaces;
 
 import com.be001.cinevibe.dto.RegisterRequestDTO;
 import com.be001.cinevibe.dto.SignInRequestDTO;
-import com.be001.cinevibe.dto.SignInResponseDTO;
+import com.be001.cinevibe.util.BaseResponse;
+import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
-    void registerUser(RegisterRequestDTO request);
+    ResponseEntity<BaseResponse<String>> registerUser(RegisterRequestDTO request);
 
-    SignInResponseDTO signInUser(SignInRequestDTO request);
+    <T> ResponseEntity<BaseResponse<T>> signInUser(SignInRequestDTO request);
 
-    void signOutUser(String authorizationHeader) throws Exception;
+    ResponseEntity<BaseResponse<String>> signOutUser(String authorizationHeader) throws Exception;
 }

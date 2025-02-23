@@ -4,9 +4,9 @@ import com.be001.cinevibe.dto.RegisterRequestDTO;
 import com.be001.cinevibe.dto.SignInRequestDTO;
 import com.be001.cinevibe.dto.SignInResponseDTO;
 import com.be001.cinevibe.service.impl.AuthServiceImpl;
+import com.be001.cinevibe.util.BaseResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,31 +21,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequestDTO request) {
-        log.info("Some user try register.");
-        authService.registerUser(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<BaseResponse<String>> register(@RequestBody @Valid RegisterRequestDTO request) {
+        return authService.registerUser(request);
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<SignInResponseDTO> signIn(@RequestBody @Valid SignInRequestDTO request) {
-        log.info("Some user try signIn.");
-        var signInResponse = authService.signInUser(request);
-        return new ResponseEntity<>(signInResponse, HttpStatus.OK);
+    public ResponseEntity<BaseResponse<SignInResponseDTO>> signIn(@RequestBody @Valid SignInRequestDTO request) {
+        return authService.signInUser(request);
     }
 
     @PostMapping("/sign-out")
-    public ResponseEntity<String> signOut(@RequestHeader("Authorization") String authorizationHeader) {
-        log.info("Some user is trying to sign out.");
-
-        try {
-            authService.signOutUser(authorizationHeader);
-            return new ResponseEntity<>("Successfully signed out.", HttpStatus.OK);
-        } catch (RuntimeException e) {
-            log.error("Sign out failed: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }catch (Exception e){
-            return new ResponseEntity<>("Invalid Authorization header.", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<BaseResponse<String>> signOut(@RequestHeader("Authorization") String authorizationHeader) {
+        return authService.signOutUser(authorizationHeader);
     }
 }
