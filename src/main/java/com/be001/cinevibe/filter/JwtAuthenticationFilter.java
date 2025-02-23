@@ -1,8 +1,6 @@
 package com.be001.cinevibe.filter;
 
-import com.be001.cinevibe.model.CustomUserDetails;
 import com.be001.cinevibe.model.Token;
-import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.service.JwtService;
 import com.be001.cinevibe.service.TokenService;
 import com.be001.cinevibe.service.UserService;
@@ -64,15 +62,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
                 }
-
             }
-
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-
 
         filterChain.doFilter(request, response);
     }

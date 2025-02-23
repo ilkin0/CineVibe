@@ -1,9 +1,8 @@
 package com.be001.cinevibe.service.impl;
 
-import com.be001.cinevibe.dto.RegisterRequest;
-import com.be001.cinevibe.dto.SignInRequest;
-import com.be001.cinevibe.dto.SignInResponse;
-import com.be001.cinevibe.dto.UserResponseDTO;
+import com.be001.cinevibe.dto.RegisterRequestDTO;
+import com.be001.cinevibe.dto.SignInRequestDTO;
+import com.be001.cinevibe.dto.SignInResponseDTO;
 import com.be001.cinevibe.model.Token;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.model.enums.UserRole;
@@ -47,36 +46,26 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserResponseDTO registerUser(@Valid RegisterRequest request) {
-        try {
-            String username = request.username();
+    public void registerUser(@Valid RegisterRequestDTO request) {
+        String username = request.username();
 
-            String email = request.email();
+        String email = request.email();
 
-            String password = request.password();
-            checkPassword(password);
+        String password = request.password();
+        checkPassword(password);
 
-            User user = new User(email,
-                    passwordEncoder.encode(password),
-                    username,
-                    UserRole.USER,
-                    true,
-                    true,
-                    true,
-                    true);
+        User user = User.builder().
+                email(email).
+                password(passwordEncoder.encode(password)).
+                username(username).
+                userRole(UserRole.USER).
+                build();
 
-            userService.save(user);
-
-            return UserResponseDTO.builder()
-                    .message("SUCCESS")
-                    .build();
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("There is already user with the same email or username");
-        }
+        userService.save(user);
     }
 
     @Override
-    public SignInResponse signInUser(SignInRequest request) {
+    public SignInResponseDTO signInUser(SignInRequestDTO request) {
         log.info("User try singing in.");
 
         try {
@@ -101,34 +90,21 @@ public class AuthServiceImpl implements AuthService {
 
         tokenService.save(token);
 
-        return new SignInResponse(accessToken, refreshToken);
+        return new SignInResponseDTO(accessToken, refreshToken);
     }
 
     @Override
     public void signOutUser(String authorizationHeader) throws Exception {
         log.info("User is signing out.");
 
-        if (!authorizationHeader.startsWith("Bearer ")) {
-            log.error("Invalid Authorization header.");
-            throw new Exception();
-        }
-
         String accessToken = authorizationHeader.substring(7);
 
-        if (!jwtService.isValidToken(accessToken, true)) {
-            log.error("Invalid token provided for logout.");
-            throw new RuntimeException("Invalid token.");
-        }
-
         Token token = tokenService.findByValue(accessToken);
-        if (token == null) {
-            log.error("Token not found in the database.");
-            throw new RuntimeException("Token not found.");
+        if (token != null) {
+            token.setRevoked(true);
+            token.setExpired(true);
+            tokenService.save(token);
         }
-
-        token.setRevoked(true);
-        token.setExpired(true);
-        tokenService.save(token);
 
         log.info("User successfully signed out.");
     }
@@ -139,7 +115,6 @@ public class AuthServiceImpl implements AuthService {
         boolean isPasswordContainNumber = false,
                 isPasswordContainLowerCase = false,
                 isPasswordContainUpperCase = false;
-
 
         for (int i = 0; i < password.length(); i++) {
             char c = password.charAt(i);
@@ -166,5 +141,4 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid password. Password doesn't contain number.");
         }
     }
-
 }

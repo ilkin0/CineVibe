@@ -1,14 +1,13 @@
 package com.be001.cinevibe.service.interfaces;
 
-import com.be001.cinevibe.dto.RegisterRequest;
-import com.be001.cinevibe.dto.SignInRequest;
-import com.be001.cinevibe.dto.SignInResponse;
-import com.be001.cinevibe.dto.UserResponseDTO;
+import com.be001.cinevibe.dto.RegisterRequestDTO;
+import com.be001.cinevibe.dto.SignInRequestDTO;
+import com.be001.cinevibe.dto.SignInResponseDTO;
 
 public interface AuthService {
-    UserResponseDTO registerUser(RegisterRequest request);
+    void registerUser(RegisterRequestDTO request);
 
-    SignInResponse signInUser(SignInRequest request);
+    SignInResponseDTO signInUser(SignInRequestDTO request);
 
     void signOutUser(String authorizationHeader) throws Exception;
 }

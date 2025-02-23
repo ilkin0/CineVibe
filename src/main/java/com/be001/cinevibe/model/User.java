@@ -6,15 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -29,7 +32,6 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String username;
-
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
@@ -52,46 +54,30 @@ public class User {
             joinColumns = @JoinColumn(name = "follow_by"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    private Set<User> follows;
+    private Set<User> follows = new HashSet<>();
 
-    private boolean isAccountNonExpired;
+    @OneToMany(mappedBy = "user")
+    private List<WatchList> watchList;
 
-    private boolean isAccountNonLocked;
+    private boolean isAccountNonExpired = true;
 
-    private boolean isCredentialsNonExpired;
+    private boolean isAccountNonLocked = true;
 
-    private boolean isEnabled;
+    private boolean isCredentialsNonExpired = true;
 
-    public User(String email, String password, String username, UserRole userRole, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isEnabled) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.userRole = userRole;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.isEnabled = isEnabled;
-    }
-
-    public User(String email, String password, String username, UserRole userRole, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.userRole = userRole;
-        this.isAccountNonExpired = isAccountNonExpired;
-        this.isAccountNonLocked = isAccountNonLocked;
-        this.isCredentialsNonExpired = isCredentialsNonExpired;
-        this.isEnabled = isEnabled;
-    }
-
-    public User(String email, String password, String username) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-    }
-
+    private boolean isEnabled = true;
 
     public CustomUserDetails userDetails() {
         return new CustomUserDetails(this);
     }
 
+    @PrePersist
+    private void onCreate() {
+        updatedAt = createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

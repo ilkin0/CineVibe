@@ -2,7 +2,6 @@ package com.be001.cinevibe.controller;
 
 import com.be001.cinevibe.dto.UserProfileDTO;
 import com.be001.cinevibe.exceptions.NoDataFound;
-import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -44,6 +43,9 @@ public class ProfileController {
         return ResponseEntity.ok(service.findAllProfiles(pageable));
     }
 
+    /**
+     * Update the current user's profile.
+     */
     @PostMapping("/update")
     public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody @Valid UserProfileDTO profileInfo, HttpServletRequest request) {
         return service.updateProfile(profileInfo, request);

@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +25,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository repository;
+
     private final TokenService tokenService;
 
     private final ProfileMapper mapper;
@@ -46,9 +46,7 @@ public class UserService {
     }
 
     public UserProfileDTO getProfile() throws NoDataFound {
-        Optional<User> currentPrincipal = getPrincipal();
-        if (currentPrincipal.isPresent()) return mapper.toProfile(currentPrincipal.get());
-        throw new NoDataFound("No principal found!");
+        return mapper.toProfile(getPrincipal());
     }
 
     public void deactivateAccount(Long id) throws NoDataFound {
@@ -74,57 +72,46 @@ public class UserService {
         log.warn("Account is deleted by id" + id);
     }
 
-    public UserProfileDTO addFollowers(Long followingId) throws NoDataFound { // 14 -- 14
-        if (getPrincipal().isPresent()) { //
-            User follower = getPrincipal().get(); // follower -- 14 olan
-            User following = repository.findById(followingId) // 11 olan
-                    .orElseThrow(() -> new RuntimeException("Following not found"));
+    public UserProfileDTO addFollowers(Long followingId) throws NoDataFound {
+        User follower = getPrincipal();
+        User following = repository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following not found"));
 
-            if(Objects.equals(follower.getId(), followingId)) throw new IllegalArgumentException("You can not follow yourself!");
+        if (Objects.equals(follower.getId(), followingId))
+            throw new IllegalArgumentException("You can not follow yourself!");
 
-            follower.getFollows().add(following);
-            return mapper.toProfile(repository.save(follower));
-        }
-        throw new NoDataFound("No principal found!");
+        follower.getFollows().add(following);
+        return mapper.toProfile(repository.save(follower));
     }
 
     public UserProfileDTO removeFollowers(Long followingId) throws NoDataFound {
+        User follower = getPrincipal();
 
-        if (getPrincipal().isPresent()) {
-            User follower = getPrincipal().get();
+        User following = repository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following not found"));
 
-            User following = repository.findById(followingId)
-                    .orElseThrow(() -> new RuntimeException("Following not found"));
+        follower.getFollows().forEach(System.out::println);
 
+        follower.getFollows().remove(following);
 
-            follower.getFollows().forEach(System.out::println); // TODO LAZY INITIALIZATION PROBLEM
-
-            follower.getFollows().remove(following); //  SET, ind
-
-            return mapper.toProfile(repository.save(follower));
-        }
-        throw new NoDataFound("No principal found!");
+        return mapper.toProfile(repository.save(follower));
     }
 
     public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) {
-        if (getPrincipal().isPresent()) {
 
-            String newEmail = profileInfo.getEmail();
-            String newUsername = profileInfo.getUsername();
+        String newEmail = profileInfo.getEmail();
+        String newUsername = profileInfo.getUsername();
 
-            UserProfileDTO userProfileDTO = new UserProfileDTO(newEmail, newUsername);
-            ResponseEntity<UserProfileDTO> user = ResponseEntity.ok(mapper.toProfile(repository.save(mapper.toEntity(getPrincipal().get(), userProfileDTO))));
+        UserProfileDTO userProfileDTO = new UserProfileDTO(newEmail, newUsername);
+        ResponseEntity<UserProfileDTO> user = ResponseEntity.ok(mapper.toProfile(repository.save(mapper.toEntity(getPrincipal(), userProfileDTO))));
 
-            String token = request.getHeader("Authorization").substring(7);
-            Token byValue = tokenService.findByValue(token);
-            byValue.setRevoked(true);
-            byValue.setExpired(true);
-            tokenService.save(byValue);
+        String token = request.getHeader("Authorization").substring(7);
+        Token byValue = tokenService.findByValue(token);
+        byValue.setRevoked(true);
+        byValue.setExpired(true);
+        tokenService.save(byValue);
 
-            return user;
-
-        }
-        return ResponseEntity.notFound().build();
+        return user;
     }
 
     public void save(User user) {
@@ -132,13 +119,15 @@ public class UserService {
         repository.save(user);
     }
 
-    public Optional<User> getPrincipal() {
+    public User getPrincipal() throws NoDataFound {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> user = Optional.empty();
         if (principal instanceof CustomUserDetails details) {
-            return Optional.of(details.getUser());
+            user = Optional.of(details.getUser());
         }
-        System.out.println(principal);
-
-        return Optional.empty();
+        if (user.isEmpty()) {
+            throw new NoDataFound("No principal found!");
+        }
+        return user.get();
     }
 }
