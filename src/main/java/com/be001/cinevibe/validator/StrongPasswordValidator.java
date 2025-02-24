@@ -19,9 +19,9 @@ public class StrongPasswordValidator implements ConstraintValidator<StrongPasswo
         String password = request.password();
 
         if (password.contains(request.email()) ||
-                password.contains("<script>") ||
-                password.toLowerCase().contains("password") ||
-                password.matches(".*\\d{6,}.*")) {
+            password.contains("<script>") ||
+            password.toLowerCase().contains("password") ||
+            password.matches(".*\\d{6,}.*")) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(message)
                     .addPropertyNode("password")
