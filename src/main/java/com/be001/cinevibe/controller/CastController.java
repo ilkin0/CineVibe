@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/casts")
+@RequestMapping("api/v1//casts")
 public class CastController {
     private final CastService castService;
 

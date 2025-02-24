@@ -1,47 +1,50 @@
 package com.be001.cinevibe.controller;
 
-import com.be001.cinevibe.model.Comment;
 import com.be001.cinevibe.service.CommentService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.be001.cinevibe.dto.CommentDTO;
+import com.be001.cinevibe.dto.CommentRequestDTO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("api/v1/comments")
+@RequiredArgsConstructor
 public class CommentController {
+
     private final CommentService commentService;
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<Comment>> list() {
-        return ResponseEntity.ok(commentService.getList());
+    public ResponseEntity<List<CommentDTO>> getAll() {
+        return ResponseEntity.ok(commentService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(commentService.findById(id));
+    public ResponseEntity<CommentDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody Comment comment) {
-        commentService.save(comment);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        commentService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<CommentDTO> create(@RequestBody String content) {
+        return ResponseEntity.ok(commentService.create(content));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Comment comment) {
-        commentService.update(id, comment);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CommentDTO> update(@PathVariable Long id, @RequestBody CommentRequestDTO commentRequestDTO) {
+        return ResponseEntity.ok(commentService.update(id, commentRequestDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        commentService.delete(id);
     }
 }

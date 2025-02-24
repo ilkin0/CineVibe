@@ -2,61 +2,61 @@ package com.be001.cinevibe.service;
 
 import com.be001.cinevibe.model.Comment;
 import com.be001.cinevibe.repository.CommentRepository;
+import com.be001.cinevibe.dto.CommentDTO;
+import com.be001.cinevibe.dto.CommentRequestDTO;
+import com.be001.cinevibe.exception.NoDataFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
+
     private final CommentRepository commentRepository;
+    public static final String COMMENT_ERROR = "Comment not found";
 
-    public CommentService(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
+    public List<CommentDTO> getAll() {
+        List<Comment> commentList = commentRepository.findAll();
+        return commentList.stream().map(this::mapCommentToCommentDTO).toList();
     }
 
-    public List<Comment> getList() {
-        return commentRepository.findAll();
+    public CommentDTO getById(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new NoDataFoundException(COMMENT_ERROR));
+        return mapCommentToCommentDTO(comment);
     }
 
-    public Comment findById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id can not be null");
-        }
-        Optional<Comment> comment = commentRepository.findById(id);
-        return comment.orElse(null);
-    }
-
-    public void save(Comment comment) {
-        if (comment != null) {
-            commentRepository.save(comment);
-        }
-    }
-
-    public void deleteById(Long id) {
-        if (id != null) {
-            commentRepository.deleteById(id);
-        }
-    }
-
-    public void update(Long id, Comment updatedComment) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id cannot be null");
-        }
-        Comment comment = commentRepository.findById(id).orElseThrow();
-        if (updatedComment.getContent() != null) {
-            comment.setContent(updatedComment.getContent());
-        }
-        if (updatedComment.getUpdatedAt() != null) {
-            comment.setUpdatedAt(LocalDateTime.now());
-        }
-        if (updatedComment.getUser() != null) {
-            comment.setUser(updatedComment.getUser());
-        }
-        if (updatedComment.getReview() != null) {
-            comment.setReview(updatedComment.getReview());
-        }
+    public CommentDTO create(String content) {
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
+        return mapCommentToCommentDTO(comment);
+    }
+
+    public CommentDTO update(Long id, CommentRequestDTO commentDTO) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new NoDataFoundException(COMMENT_ERROR));
+        comment.setContent(commentDTO.content());
+        comment.setUpdatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
+        return mapCommentToCommentDTO(comment);
+    }
+
+    public void delete(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new NoDataFoundException(COMMENT_ERROR));
+        commentRepository.deleteById(comment.getId());
+
+    }
+
+    private CommentDTO mapCommentToCommentDTO(Comment comment) {
+        return CommentDTO.builder()
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .build();
     }
 }

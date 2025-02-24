@@ -3,93 +3,47 @@ package com.be001.cinevibe.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "comments")
+@Builder
+@AllArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String content;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "review_id")
     private Review review;
 
-    public Comment(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     public Comment() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Review getReview() {
-        return review;
-    }
-
-    public void setReview(Review review) {
-        this.review = review;
     }
 
     @Override
     public String toString() {
         return "Comment{" +
-                "id=" + id +
-                ", content='" + content + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", user=" + user +
-                '}';
+               "id=" + id +
+               ", content='" + content + '\'' +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               ", user=" + user +
+               '}';
     }
 }
