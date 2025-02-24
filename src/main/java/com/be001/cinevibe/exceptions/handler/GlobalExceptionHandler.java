@@ -3,6 +3,7 @@ package com.be001.cinevibe.exceptions.handler;
 import com.be001.cinevibe.dto.ExceptionResponseDTO;
 import com.be001.cinevibe.exception.AlreadyExistsException;
 import com.be001.cinevibe.exception.NoDataFoundException;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
@@ -21,20 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoDataFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public @ResponseBody ExceptionResponseDTO handleNoDataFoundException(NoDataFoundException noDataFoundException) {
-        return new ExceptionResponseDTO(HttpStatus.NOT_FOUND.value(), noDataFoundException.getMessage());
+    public @ResponseBody ResponseEntity<ExceptionResponseDTO> handleNoDataFoundException(NoDataFoundException noDataFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ExceptionResponseDTO(HttpStatus.NOT_FOUND.value(), noDataFoundException.getMessage()));
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public @ResponseBody ExceptionResponseDTO handleAlreadyExistsException(AlreadyExistsException alreadyExistsException){
-        return new ExceptionResponseDTO(HttpStatus.CONFLICT.value(), alreadyExistsException.getMessage());
+    public @ResponseBody ResponseEntity<ExceptionResponseDTO> handleAlreadyExistsException(AlreadyExistsException alreadyExistsException){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ExceptionResponseDTO(HttpStatus.CONFLICT.value(), alreadyExistsException.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, List<String>>> handleMethodArgumentInvalid(MethodArgumentNotValidException exception) {
         Map<String, List<String>> errors = new ConcurrentHashMap<>();
+
         exception.getBindingResult().getGlobalErrors().forEach(globalError ->
                 errors.computeIfAbsent(globalError.getObjectName(), k -> new ArrayList<>())
                         .add(globalError.getDefaultMessage())
