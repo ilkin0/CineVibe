@@ -1,10 +1,10 @@
 package com.be001.cinevibe.controller;
 
+import com.be001.cinevibe.service.CommentService;
+import org.springframework.http.ResponseEntity;
 import com.be001.cinevibe.dto.CommentDTO;
 import com.be001.cinevibe.dto.CommentRequestDTO;
-import com.be001.cinevibe.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
