@@ -23,5 +23,4 @@ public class UserProfileDTO {
         this.email = email;
         this.username = username;
     }
-
 }
