@@ -15,11 +15,13 @@ public class JwtService {
 
     @Value("${security.jwt.accessToken.secret}")
     private String accessTokenSecret;
+
     @Value("${security.jwt.refreshToken.secret}")
     private String refreshTokenSecret;
 
     @Value("${security.jwt.accessToken.expiration}")
     private long accessTokenExpiration;
+
     @Value("${security.jwt.refreshToken.expiration}")
     private long refreshTokenExpiration;
 

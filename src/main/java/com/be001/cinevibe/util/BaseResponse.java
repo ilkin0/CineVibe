@@ -27,7 +27,7 @@ public class BaseResponse<T> {
                 .build();
     }
 
-    public static <T> BaseResponse<T> OK(T data) {
+    public static <T> BaseResponse<T> ok(T data) {
         return BaseResponse.<T>builder()
                 .success(true)
                 .data(data)
