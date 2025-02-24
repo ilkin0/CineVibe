@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
     @Value("${security.jwt.accessToken.secret}")
     private String accessTokenSecret;
     @Value("${security.jwt.refreshToken.secret}")
@@ -52,11 +53,6 @@ public class JwtService {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    private Date extractExpirationDate(String token, boolean isAccessToken) {
-        Claims claims = extractClaims(token, isAccessToken);
-        return claims.getExpiration();
     }
 
     public String extractUsername(String token, boolean isAccessToken) {
