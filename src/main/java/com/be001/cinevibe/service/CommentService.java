@@ -1,5 +1,6 @@
 package com.be001.cinevibe.service;
 
+import com.be001.cinevibe.mapper.CommentMapper;
 import com.be001.cinevibe.model.Comment;
 import com.be001.cinevibe.dto.CommentDTO;
 import com.be001.cinevibe.exception.CommentNotFoundException;
@@ -15,16 +16,17 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     public List<CommentDTO> getAll() {
         List<Comment> commentList = commentRepository.findAll();
-        return commentList.stream().map(this::mapCommentToCommentDTO).toList();
+        return commentList.stream().map(commentMapper::mapCommentToCommentDTO).toList();
     }
 
     public CommentDTO getById(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
-        return mapCommentToCommentDTO(comment);
+        return commentMapper.mapCommentToCommentDTO(comment);
     }
 
     public CommentDTO create(String content) {
@@ -32,21 +34,9 @@ public class CommentService {
         comment.setContent(content);
         comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
-        return mapCommentToCommentDTO(comment);
+        return commentMapper.mapCommentToCommentDTO(comment);
     }
 
-    private Comment mapCommentDTOToComment(CommentDTO commentDTO) {
-        return Comment.builder()
-                .content(commentDTO.getContent())
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
 
-    private CommentDTO mapCommentToCommentDTO(Comment comment) {
-        return CommentDTO.builder()
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .build();
-    }
 
 }
