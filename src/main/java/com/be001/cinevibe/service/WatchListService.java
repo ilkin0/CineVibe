@@ -2,6 +2,7 @@ package com.be001.cinevibe.service;
 
 import com.be001.cinevibe.dto.MovieDTO;
 import com.be001.cinevibe.dto.WatchListDTO;
+import com.be001.cinevibe.exception.AlreadyExistsException;
 import com.be001.cinevibe.exception.InvalidDataException;
 import com.be001.cinevibe.exception.NoDataFoundException;
 import com.be001.cinevibe.model.Movie;
@@ -62,7 +63,7 @@ public class WatchListService {
         boolean exists = watchListRepository.existsByUserWatchListAndMovie(userId, watchListId, movieId);
 
         if (exists) {
-            throw new IllegalArgumentException("This movie is already added to the specified watchlist");
+            throw new AlreadyExistsException("This movie is already added to the specified watchlist");
         }
         watchListRepository.addMovieToUserWatchList(userId, watchListId, movieId);
     }
@@ -74,6 +75,7 @@ public class WatchListService {
 
         WatchList watchList = watchListRepository.save(WatchList.builder()
                 .user(user)
+                .title(title)
                 .movies(movies)
                 .build());
         return mapWatchListToDTO(watchList);

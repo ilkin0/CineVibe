@@ -1,10 +1,14 @@
 package com.be001.cinevibe.exceptions.handler;
 
+import com.be001.cinevibe.dto.ExceptionResponseDTO;
+import com.be001.cinevibe.exception.AlreadyExistsException;
 import com.be001.cinevibe.exception.NoDataFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,8 +22,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoDataFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNoDataFoundException(NoDataFoundException noDataFoundException) {
-        return ResponseEntity.ok(noDataFoundException.getMessage());
+    public @ResponseBody ExceptionResponseDTO handleNoDataFoundException(NoDataFoundException noDataFoundException) {
+        return new ExceptionResponseDTO(HttpStatus.NOT_FOUND.value(), noDataFoundException.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public @ResponseBody ExceptionResponseDTO handleAlreadyExistsException(AlreadyExistsException alreadyExistsException){
+        return new ExceptionResponseDTO(HttpStatus.CONFLICT.value(), alreadyExistsException.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
