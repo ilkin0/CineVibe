@@ -21,7 +21,7 @@ public interface WatchListRepository extends JpaRepository<WatchList, Long> {
             FROM movie_to_watchlist mtw
             LEFT JOIN watch_lists wl ON mtw.watch_list_id = wl.id
             WHERE wl.id = :watchListId AND wl.user.id = :userId AND mtw.movie.id = :movieId
-             """, nativeQuery = true)
+            """, nativeQuery = true)
     boolean existsByUserWatchListAndMovie(@Param("watchListId") Long watchListId,
                                           @Param("userId") Long userId,
                                           @Param("movieId") Long movieId);

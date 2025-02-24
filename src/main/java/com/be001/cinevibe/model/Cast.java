@@ -1,10 +1,21 @@
 package com.be001.cinevibe.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
+@ToString
 @Entity
 @Table(name = "casts")
 public class Cast {
@@ -14,7 +25,9 @@ public class Cast {
     private String name;
     private String imageUrl;
     private String biography;
+
     @ManyToMany(mappedBy = "cast")
+    @ToString.Exclude
     Set<Movie> movies = new HashSet<>();
 
     public Cast(Long id, String name, String imageUrl, String biography, Set<Movie> movies) {
@@ -26,56 +39,5 @@ public class Cast {
     }
 
     public Cast() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getBiography() {
-        return biography;
-    }
-
-    public void setBiography(String biography) {
-        this.biography = biography;
-    }
-
-    public Set<Movie> getMovies() {
-        return movies;
-    }
-
-    public void setMovies(Set<Movie> movies) {
-        this.movies = movies;
-    }
-
-    @Override
-    public String toString() {
-        return "Cast{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", imageUrl='" + imageUrl + '\'' +
-               ", biography='" + biography + '\'' +
-               ", movies=" + movies +
-               '}';
     }
 }

@@ -122,7 +122,7 @@ public class UserService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> user = Optional.empty();
         if (principal instanceof CustomUserDetails details) {
-            user = Optional.of(details.getUser());
+            user = Optional.of(details.user());
         }
         if (user.isEmpty()) {
             throw new NoDataFoundException("No principal found!");
