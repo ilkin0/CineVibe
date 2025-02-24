@@ -3,7 +3,7 @@ package com.be001.cinevibe.dto;
 import lombok.Builder;
 
 @Builder
-public class MovieDTOMock {
+public class MovieDTO {
 
     private String title;
     private Integer releaseYear;

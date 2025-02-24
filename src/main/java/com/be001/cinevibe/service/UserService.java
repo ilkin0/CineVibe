@@ -1,45 +1,132 @@
 package com.be001.cinevibe.service;
 
+import com.be001.cinevibe.dto.UserProfileDTO;
+import com.be001.cinevibe.exception.NoDataFoundException;
+import com.be001.cinevibe.mapper.ProfileMapper;
+import com.be001.cinevibe.model.CustomUserDetails;
+import com.be001.cinevibe.model.Token;
 import com.be001.cinevibe.model.User;
 import com.be001.cinevibe.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
 public class UserService {
-    private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    private final UserRepository repository;
+
+    private final TokenService tokenService;
+
+    private final ProfileMapper mapper;
+
+    public UserService(UserRepository userRepository, TokenService tokenService, ProfileMapper mapper) {
+        this.repository = userRepository;
+        this.tokenService = tokenService;
+        this.mapper = mapper;
     }
 
     public User findByUsername(String username) {
-        return userRepository
+        return repository
                 .findByUsername(username).orElseThrow(() -> {
-                            log.info("User with username " + username + " not found");
+                            log.info("User with username {} not found", username);
                             return new UsernameNotFoundException("User not found");
                         }
                 );
     }
 
-    public boolean existsByUsername(String username) {
-        boolean b = userRepository.existsByUsername(username);
-        if (!b) log.info("User with username :" + username + " doesn't exist.");
-        return b;
-    }
-    public boolean existsByEmail(String email) {
-        boolean b = userRepository.existsByUsername(email);
-        if (!b) log.info("User with email :" + email + " doesn't exist.");
-        return b;
+    public UserProfileDTO getProfile() throws NoDataFoundException {
+        return mapper.toProfile(getPrincipal());
     }
 
-    public User save(User user){
+    public void deactivateAccount(Long id) throws NoDataFoundException {
+        User user = repository.findById(id).orElseThrow(() -> new NoDataFoundException("No user found by given id"));
+        user.setEnabled(false);
+        repository.save(user);
+        log.warn("Account is disabled: {}", user.getEmail());
+    }
+
+    public void activateAccount(Long id) throws NoDataFoundException {
+        User user = repository.findById(id).orElseThrow(() -> new NoDataFoundException("No user found by given id"));
+        user.setEnabled(true);
+        repository.save(user);
+        log.warn("Account is enabled: {}", user.getEmail());
+    }
+
+    public List<UserProfileDTO> findAllProfiles(Pageable pageable) {
+        return repository.findAll(pageable).stream().map(mapper::toProfile).toList();
+    }
+
+    public void deleteById(Long id) {
+        tokenService.deleteByUserId(id);
+        repository.deleteById(id);
+        log.warn("Account is deleted by id{}", id);
+    }
+
+    public UserProfileDTO addFollowers(Long followingId) throws NoDataFoundException {
+        log.info("You try add some follow.");
+
+        User follower = getPrincipal();
+        User following = repository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following not found"));
+
+        if (Objects.equals(follower.getId(), followingId))
+            throw new IllegalArgumentException("You can not follow yourself!");
+
+        follower.getFollows().add(following);
+        return mapper.toProfile(repository.save(follower));
+    }
+
+    public void removeFollowers(Long followingId) throws NoDataFoundException {
+        log.info("You try remove some follow.");
+
+        User follower = getPrincipal();
+
+        User following = repository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following not found"));
+
+        follower.getFollows().remove(following);
+
+        repository.deleteFollowRelation(follower.getId(), followingId);
+        repository.save(follower);
+    }
+
+    public ResponseEntity<UserProfileDTO> updateProfile(UserProfileDTO profileInfo, HttpServletRequest request) throws NoDataFoundException {
+        ResponseEntity<UserProfileDTO> user = ResponseEntity.ok(mapper.
+                toProfile(repository.save(mapper.toEntity(getPrincipal(), profileInfo))));
+
+        String token = request.getHeader("Authorization").substring(7);
+        Token byValue = tokenService.findByValue(token);
+        byValue.setRevoked(true);
+        byValue.setExpired(true);
+        tokenService.save(byValue);
+
+        return user;
+    }
+
+    public void save(User user) {
         log.info("User saved.");
-        return userRepository.save(user);
+        repository.save(user);
+    }
+
+    public User getPrincipal() throws NoDataFoundException {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> user = Optional.empty();
+        if (principal instanceof CustomUserDetails details) {
+            user = Optional.of(details.getUser());
+        }
+        if (user.isEmpty()) {
+            throw new NoDataFoundException("No principal found!");
+        }
+        return user.get();
     }
 }

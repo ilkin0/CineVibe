@@ -71,11 +71,11 @@ public class Cast {
     @Override
     public String toString() {
         return "Cast{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", biography='" + biography + '\'' +
-                ", movies=" + movies +
-                '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", imageUrl='" + imageUrl + '\'' +
+               ", biography='" + biography + '\'' +
+               ", movies=" + movies +
+               '}';
     }
 }
