@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: cinevibe
+  datasource:
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: jdbc:postgresql://localhost:5432/cinevibe
+    url: ${DATASOURCE_URL}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        connection:
+          release_mode: on_close
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  profiles:
+    include: security

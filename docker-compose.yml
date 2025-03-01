@@ -1,0 +1,41 @@
+services:
+  db:
+      image: postgres:17
+      ports:
+        - "5432:5432"
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: cinevibe
+      networks:
+        - cinevibe-network
+
+  db-ui:
+    image: dpage/pgadmin4
+    ports:
+      - "5433:80"
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: password
+    depends_on:
+      - db
+    networks:
+      - cinevibe-network
+
+  backend:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://db:5432/cinevibe
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - cinevibe-network
+
+
+networks:
+  cinevibe-network:
